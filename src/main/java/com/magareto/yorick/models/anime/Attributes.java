@@ -20,6 +20,7 @@ public class Attributes {
     private Integer userCount;
     private Integer favoritesCount;
     private String startDate;
+    private String endDate;
     private String nextReleaseDate;
     private Integer popularityRank;
     private Integer rankRating;
@@ -33,6 +34,15 @@ public class Attributes {
     private String youtubeVideoId;
     private String showType;
     private Boolean nsfw;
+    private String status;
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
 
     public String getCreatedAt() {
         return createdAt;
@@ -240,5 +250,13 @@ public class Attributes {
 
     public void setNsfw(Boolean nsfw) {
         this.nsfw = nsfw;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

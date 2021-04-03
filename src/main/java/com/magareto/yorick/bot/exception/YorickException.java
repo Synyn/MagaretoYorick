@@ -7,6 +7,12 @@ public class YorickException extends Exception {
     private String command;
     private String message;
 
+    public YorickException() {}
+
+    public YorickException(String message) {
+        this.message = message;
+    }
+
     public YorickException(String command, String message) {
         super("Failure for command " + command + ". " + message);
         this.command = command;
@@ -15,6 +21,7 @@ public class YorickException extends Exception {
 
     public YorickException(String message, Exception e) {
         super(message + " " + BaseUtils.getStackTrace(e));
+        this.message = message;
         e.printStackTrace();
     }
 

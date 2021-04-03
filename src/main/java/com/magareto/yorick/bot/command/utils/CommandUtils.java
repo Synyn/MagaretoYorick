@@ -13,7 +13,8 @@ public class CommandUtils {
             return null;
         }
 
-        return input.replaceFirst("\\" + Constants.PREFIX, "");
+        String[] splits = input.split(" ");
+        return splits[0].replaceFirst("\\" + Constants.PREFIX, "");
     }
 
     public static void sendMessage(Mono<MessageChannel> channelMono, String message) {
@@ -21,7 +22,16 @@ public class CommandUtils {
     }
 
     public static void sendErrorMessage(Mono<MessageChannel> channel, YorickException exception) {
-        String message = "Failed to execute command -> " + exception.getCommand() + ". " + exception.getMessage();
-        channel.flatMap(c -> c.createMessage(message)).subscribe();
+        StringBuilder sb = new StringBuilder();
+
+        if(exception.getCommand() != null) {
+            sb.append("Failed to execute command `").append(exception.getCommand()).append("`. ");
+        }
+
+        if(exception.getMessage() != null) {
+            sb.append(exception.getMessage());
+        }
+
+        channel.flatMap(c -> c.createMessage(sb.toString())).subscribe();
     }
 }

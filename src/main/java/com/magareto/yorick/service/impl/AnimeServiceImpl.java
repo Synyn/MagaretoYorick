@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class AnimeServiceImpl implements AnimeService {
     private Logger logger = Logger.getLogger(AnimeServiceImpl.class);
@@ -37,29 +38,60 @@ public class AnimeServiceImpl implements AnimeService {
         Map<String, List<String>> filters = new HashMap<>();
         filters.put("categories", genres);
 
-        AnimeResponse anime = getAnimeResponse(filters);
+        AnimeResponse animeResponse = findAll(filters);
 
+        List<Anime> animeList = animeResponse.getData();
 
-        return new Anime();
+        if (animeList.isEmpty()) {
+            throw new YorickException("The genre/genres could not be found, maybe you misspelled something ?");
+        }
+
+        Random random = new Random();
+
+        int anime = random.nextInt(animeList.size());
+
+        return animeList.get(anime);
     }
 
-    private AnimeResponse getAnimeResponse(Map<String, List<String>> filters) throws IOException, YorickException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+//    private Anime handleRandomization(List<Anime> animeList) {
+//
+//    }
 
-        String filterStr = urlEncodeFilters(filters);
 
-        String url = KITSU_BASE_URL + ANIME_URL + filterStr;
-        logger.info("Full url");
-        HttpGet req = new HttpGet(url);
+    private AnimeResponse findAll(Map<String, List<String>> filters) throws IOException {
+        CloseableHttpClient client = HttpClients.createDefault();
 
-        try {
-            CloseableHttpResponse resp = httpClient.execute(req);
+        String preUrl = "?sort=-averageRating&page[limit]=20&page[offset]=";
+        String urlEncodeFilters = urlEncodeFilters(filters);
 
-            return mapper.readValue(resp.getEntity().getContent(), AnimeResponse.class);
-        } catch (Exception exception) {
+        int count = getCountForFilters(urlEncodeFilters, client);
 
-            throw new YorickException("Error connecting to the KITS api.", exception);
-        }
+        Random random = new Random();
+        int offset = random.nextInt(count);
+
+        String url = KITSU_BASE_URL + ANIME_URL + preUrl + offset + urlEncodeFilters;
+
+        return getAnimeResponse(url, client);
+
+    }
+
+    private int getCountForFilters(String filters, CloseableHttpClient client) throws IOException {
+        String preUrl = "?sort=-averageRating&page[limit]=1";
+
+        String url = KITSU_BASE_URL + ANIME_URL + preUrl + filters;
+
+        AnimeResponse animeResponse = getAnimeResponse(url, client);
+
+        return animeResponse.getMeta().getCount();
+
+    }
+
+    private AnimeResponse getAnimeResponse(String url, CloseableHttpClient httpClient) throws IOException {
+        logger.info("Full URL -> " + url);
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpResponse resp = httpClient.execute(httpGet);
+
+        return mapper.readValue(resp.getEntity().getContent(), AnimeResponse.class);
 
     }
 
@@ -68,17 +100,22 @@ public class AnimeServiceImpl implements AnimeService {
 
         int filterCount = 0;
         for (String key : filters.keySet()) {
-            if (filterCount == 0) {
-                sb.append("?filter");
-            } else {
-                sb.append("&filter");
-            }
+            sb.append("&filter");
 
             sb.append("[");
             sb.append(key);
             sb.append("]=");
 
-            filters.get(key).forEach(s -> sb.append(s.replace(" ", "%20")));
+            if (filters.get(key) != null) {
+                int argsCounter = 0;
+                for (String filter : filters.get(key)) {
+                    if (argsCounter > 0) {
+                        filter = "," + filter;
+                    }
+                    sb.append(filter.replace(" ", "%20"));
+                    argsCounter++;
+                }
+            }
 
             filterCount++;
         }
