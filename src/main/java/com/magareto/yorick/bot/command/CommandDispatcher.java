@@ -35,7 +35,6 @@ public class CommandDispatcher {
             command.execute(message);
         } catch (YorickException exception) {
             exception.printStackTrace();
-            exception.setCommand(formattedCommand);
 
             CommandUtils.sendErrorMessage(message.getChannel(), exception);
         } catch (Exception e) {

@@ -5,6 +5,7 @@ import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.models.anime.Anime;
 import com.magareto.yorick.models.anime.AnimeResponse;
 import com.magareto.yorick.service.AnimeService;
+import javassist.NotFoundException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -58,13 +59,17 @@ public class AnimeServiceImpl implements AnimeService {
 //    }
 
 
-    private AnimeResponse findAll(Map<String, List<String>> filters) throws IOException {
+    private AnimeResponse findAll(Map<String, List<String>> filters) throws IOException, YorickException {
         CloseableHttpClient client = HttpClients.createDefault();
 
         String preUrl = "?sort=-averageRating&page[limit]=20&page[offset]=";
         String urlEncodeFilters = urlEncodeFilters(filters);
 
         int count = getCountForFilters(urlEncodeFilters, client);
+
+        if (count < 1) {
+            throw new YorickException("The genre/genres could not be found, maybe you misspelled something ?");
+        }
 
         Random random = new Random();
         int offset = random.nextInt(count);
