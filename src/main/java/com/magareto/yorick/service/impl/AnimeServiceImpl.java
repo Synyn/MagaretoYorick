@@ -5,8 +5,9 @@ import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.models.anime.Anime;
 import com.magareto.yorick.models.anime.AnimeResponse;
+import com.magareto.yorick.models.anime.Inclusion;
+import com.magareto.yorick.models.anime.RelationShipDataEntity;
 import com.magareto.yorick.service.AnimeService;
-import javassist.NotFoundException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -14,10 +15,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class AnimeServiceImpl implements AnimeService {
     private Logger logger = Logger.getLogger(AnimeServiceImpl.class);
@@ -41,7 +39,6 @@ public class AnimeServiceImpl implements AnimeService {
         filters.put("genres", genres);
 
         AnimeResponse animeResponse = findAll(filters);
-
         List<Anime> animeList = animeResponse.getData();
 
         if (animeList.isEmpty()) {
@@ -50,9 +47,36 @@ public class AnimeServiceImpl implements AnimeService {
 
         Random random = new Random();
 
-        int anime = random.nextInt(animeList.size());
+        int animeIndex = random.nextInt(animeList.size());
 
-        return animeList.get(anime);
+        Anime anime = animeList.get(animeIndex);
+
+        anime.setGenres(getGenresForAnime(animeResponse.getIncluded(), anime));
+
+        return anime;
+    }
+
+    private List<String> getGenresForAnime(List<Inclusion> included, Anime anime) {
+        List<String> genres = new ArrayList<>();
+
+        List<RelationShipDataEntity> genreData = anime.getRelationships().getGenres().getData();
+        for(RelationShipDataEntity genreRelation: genreData) {
+            for(Inclusion inclusion: included) {
+                if(!inclusion.getType().equals("genres")) {
+                    continue;
+                }
+
+                if(!inclusion.getId().equals(genreRelation.getId())) {
+                    continue;
+                }
+
+                genres.add(inclusion.getAttributes().getName());
+
+            }
+        }
+
+        return genres;
+
     }
 
 //    private Anime handleRandomization(List<Anime> animeList) {
@@ -63,7 +87,7 @@ public class AnimeServiceImpl implements AnimeService {
     private AnimeResponse findAll(Map<String, List<String>> filters) throws IOException, YorickException {
         CloseableHttpClient client = HttpClients.createDefault();
 
-        String preUrl = "?sort=-averageRating&page[limit]=20&page[offset]=";
+        String preUrl = "?sort=-averageRating&include=genres&page[limit]=20&page[offset]=";
         String urlEncodeFilters = urlEncodeFilters(filters);
 
         int count = getCountForFilters(urlEncodeFilters, client);

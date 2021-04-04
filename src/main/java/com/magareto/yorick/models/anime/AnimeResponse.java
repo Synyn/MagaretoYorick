@@ -1,5 +1,6 @@
 package com.magareto.yorick.models.anime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 public class AnimeResponse {
     private List<Anime> data;
     private Meta meta;
+    private List<Inclusion> included;
 
 
     public List<Anime> getData() {
@@ -24,5 +26,13 @@ public class AnimeResponse {
 
     public void setMeta(Meta meta) {
         this.meta = meta;
+    }
+
+    public List<Inclusion> getIncluded() {
+        return included;
+    }
+
+    public void setIncluded(List<Inclusion> included) {
+        this.included = included;
     }
 }

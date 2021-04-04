@@ -61,7 +61,7 @@ public class AnimeCommand implements YorickCommand {
 
         if (argument.equals(GENRE_ARGUMENT)) {
             anime = animeService.getRandomRecommendationForGenres(listedParameters);
-        }else {
+        } else {
             throw new YorickException(String.format(ErrorMessages.INVALID_ARGUMENT, argument));
         }
 
@@ -75,6 +75,7 @@ public class AnimeCommand implements YorickCommand {
         String url = anime.getLinks().getSelf();
         String description = attributes.getDescription();
         String thumbnail = attributes.getPosterImage().getLarge();
+        String genres = handleListings(anime.getGenres());
 
         attributes.getTitles().forEach((k, v) -> logger.info("Key -> " + k + " Value -> " + v));
 
@@ -84,15 +85,17 @@ public class AnimeCommand implements YorickCommand {
         String status = attributes.getStatus();
         Integer episodeCount = attributes.getEpisodeCount();
 
+
         for (int i = 0; i < 3; i++) {
             try {
                 mono.subscribe(c -> c.createEmbed(e -> e.setTitle(title)
                         .setUrl(url)
                         .setDescription(description == null ? "" : description)
                         .setThumbnail(thumbnail)
+                        .addField("Genres", genres, true)
                         .addField("Average Rating", averageRating == null ? DEFAULT_FIELD_VALUE : averageRating, true)
-                        .addField("Date", date.contains("null") ? DEFAULT_FIELD_VALUE : date, true)
-                        .addField("Status", status == null ? DEFAULT_FIELD_VALUE : status, false)
+                        .addField("Date", date.contains("null") ? DEFAULT_FIELD_VALUE : date, false)
+                        .addField("Status", status == null ? DEFAULT_FIELD_VALUE : status, true)
                         .addField("Episode Count", episodeCount == null ? DEFAULT_FIELD_VALUE : Integer.toString(episodeCount), true)).block());
                 break;
             } catch (Exception e) {
@@ -101,6 +104,22 @@ public class AnimeCommand implements YorickCommand {
         }
 
 
+    }
+
+    private String handleListings(List<String> listings) {
+        StringBuilder sb = new StringBuilder();
+        if (listings != null) {
+            for (int i = 0; i < listings.size(); i++) {
+
+                sb.append(listings.get(i));
+
+                if (i != listings.size() - 1) {
+                    sb.append(",");
+                }
+            }
+        }
+
+        return sb.toString();
     }
 
     private String handleTitle(Map<String, String> titles) {
