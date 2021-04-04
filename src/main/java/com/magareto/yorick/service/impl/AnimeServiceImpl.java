@@ -36,7 +36,9 @@ public class AnimeServiceImpl implements AnimeService {
     public Anime getRandomRecommendationForGenres(List<String> genres) throws IOException, YorickException {
 
         Map<String, List<String>> filters = new HashMap<>();
-        filters.put("genres", genres);
+        if (!genres.isEmpty()) {
+            filters.put("genres", genres);
+        }
 
         AnimeResponse animeResponse = findAll(filters);
         List<Anime> animeList = animeResponse.getData();
@@ -60,13 +62,13 @@ public class AnimeServiceImpl implements AnimeService {
         List<String> genres = new ArrayList<>();
 
         List<RelationShipDataEntity> genreData = anime.getRelationships().getGenres().getData();
-        for(RelationShipDataEntity genreRelation: genreData) {
-            for(Inclusion inclusion: included) {
-                if(!inclusion.getType().equals("genres")) {
+        for (RelationShipDataEntity genreRelation : genreData) {
+            for (Inclusion inclusion : included) {
+                if (!inclusion.getType().equals("genres")) {
                     continue;
                 }
 
-                if(!inclusion.getId().equals(genreRelation.getId())) {
+                if (!inclusion.getId().equals(genreRelation.getId())) {
                     continue;
                 }
 
@@ -78,10 +80,6 @@ public class AnimeServiceImpl implements AnimeService {
         return genres;
 
     }
-
-//    private Anime handleRandomization(List<Anime> animeList) {
-//
-//    }
 
 
     private AnimeResponse findAll(Map<String, List<String>> filters) throws IOException, YorickException {
@@ -128,7 +126,6 @@ public class AnimeServiceImpl implements AnimeService {
     private String urlEncodeFilters(Map<String, List<String>> filters) {
         StringBuilder sb = new StringBuilder();
 
-        int filterCount = 0;
         for (String key : filters.keySet()) {
             sb.append("&filter");
 
@@ -146,8 +143,6 @@ public class AnimeServiceImpl implements AnimeService {
                     argsCounter++;
                 }
             }
-
-            filterCount++;
         }
 
         return sb.toString();

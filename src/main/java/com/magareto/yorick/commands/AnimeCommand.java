@@ -37,32 +37,41 @@ public class AnimeCommand implements YorickCommand {
     @Override
     public void execute(Message message) throws YorickException, IOException, NotFoundException {
         String content = message.getContent();
-        String[] split = content.split("=");
+        String[] arg = content.split(" ");
 
-        Mono<MessageChannel> channel = message.getChannel();
-        if (split.length < 2) {
-            CommandUtils.sendMessage(channel, "You need to provide an argument");
-            return;
+        if (arg.length <= 1) {
+            throw new YorickException(ErrorMessages.INVALID_COMMAND);
         }
 
-        String argument = split[0].split(" ")[1];
+        Mono<MessageChannel> channel = message.getChannel();
+        String argument = null;
+        String filter = null;
+
+        if (arg[1].contains("=")) {
+            String[] split = arg[1].split("=");
+            argument = split[0];
+            filter = split[1];
+        } else {
+            filter = arg[1];
+        }
 
         logger.info("Inside Anime command content -> " + content);
-        Anime anime = handleCommand(argument, split[1]);
+        Anime anime = handleCommand(argument, filter);
         sendAnime(channel, anime);
     }
 
     private Anime handleCommand(String argument, String filter) throws YorickException, IOException, NotFoundException {
         Anime anime = null;
 
-        logger.info("filter");
+        List<String> listedParameters = null;
 
-        List<String> listedParameters = Arrays.asList(filter.split(","));
-
-        if (GENRE_ARGUMENT_LIST.contains(argument)) {
+        if (!filter.isEmpty()) {
+            listedParameters = Arrays.asList(filter.split(","));
+        }
+        if (argument == null || GENRE_ARGUMENT_LIST.contains(argument)) {
             anime = animeService.getRandomRecommendationForGenres(listedParameters);
         } else {
-            throw new YorickException(String.format(ErrorMessages.INVALID_ARGUMENT, argument));
+            throw new YorickException(ErrorMessages.INVALID_ARGUMENT);
         }
 
         return anime;
