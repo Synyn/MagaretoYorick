@@ -22,7 +22,7 @@ import java.util.*;
 public class AnimeCommand implements YorickCommand {
     private Logger logger = Logger.getLogger(AnimeCommand.class);
 
-    public static final String GENRE_ARGUMENT = "genre";
+    public static final Set<String> GENRE_ARGUMENT_LIST = new HashSet<>(Arrays.asList("genre", "genres"));
 
     private static final String TITLE_ENG = "en";
     private static final String TITLE_EN_US = "en_us";
@@ -59,7 +59,7 @@ public class AnimeCommand implements YorickCommand {
 
         List<String> listedParameters = Arrays.asList(filter.split(","));
 
-        if (argument.equals(GENRE_ARGUMENT)) {
+        if (GENRE_ARGUMENT_LIST.contains(argument)) {
             anime = animeService.getRandomRecommendationForGenres(listedParameters);
         } else {
             throw new YorickException(String.format(ErrorMessages.INVALID_ARGUMENT, argument));
