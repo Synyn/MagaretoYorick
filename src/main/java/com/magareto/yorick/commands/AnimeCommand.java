@@ -114,7 +114,7 @@ public class AnimeCommand implements YorickCommand {
                 sb.append(listings.get(i));
 
                 if (i != listings.size() - 1) {
-                    sb.append(",");
+                    sb.append(", ");
                 }
             }
         }
