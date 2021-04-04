@@ -27,7 +27,7 @@ public class CommandDispatcher {
         YorickCommand command = Globals.commands.get(formattedCommand);
 
         if (command == null) {
-            CommandUtils.sendMessage(message.getChannel(), "The command `" + message.getContent() + "` does not exist.");
+            CommandUtils.sendMessage(message.getChannel(), "The command `" + Constants.PREFIX + formattedCommand + "` does not exist.");
             return;
         }
 

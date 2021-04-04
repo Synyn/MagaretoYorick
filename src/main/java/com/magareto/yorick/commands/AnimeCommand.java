@@ -3,6 +3,7 @@ package com.magareto.yorick.commands;
 import com.magareto.yorick.bot.command.YorickCommand;
 import com.magareto.yorick.bot.command.annotations.Command;
 import com.magareto.yorick.bot.command.utils.CommandUtils;
+import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.models.anime.Anime;
@@ -15,9 +16,7 @@ import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Command(name = "anime")
 public class AnimeCommand implements YorickCommand {
@@ -59,10 +58,11 @@ public class AnimeCommand implements YorickCommand {
         logger.info("filter");
 
         List<String> listedParameters = Arrays.asList(filter.split(","));
+
         if (argument.equals(GENRE_ARGUMENT)) {
-
             anime = animeService.getRandomRecommendationForGenres(listedParameters);
-
+        }else {
+            throw new YorickException(String.format(ErrorMessages.INVALID_ARGUMENT, argument));
         }
 
         return anime;
@@ -84,14 +84,23 @@ public class AnimeCommand implements YorickCommand {
         String status = attributes.getStatus();
         Integer episodeCount = attributes.getEpisodeCount();
 
-        mono.subscribe(c -> c.createEmbed(e -> e.setTitle(title)
-                .setUrl(url)
-                .setDescription(description)
-                .setThumbnail(thumbnail)
-                .addField("Average Rating", averageRating == null ? DEFAULT_FIELD_VALUE : averageRating, true)
-                .addField("Date", date.contains("null") ? DEFAULT_FIELD_VALUE : date, true)
-                .addField("Status", status == null ? DEFAULT_FIELD_VALUE : status, false)
-                .addField("Episode Count", episodeCount == null ? DEFAULT_FIELD_VALUE : Integer.toString(episodeCount), true)).block());
+        for (int i = 0; i < 3; i++) {
+            try {
+                mono.subscribe(c -> c.createEmbed(e -> e.setTitle(title)
+                        .setUrl(url)
+                        .setDescription(description == null ? "" : description)
+                        .setThumbnail(thumbnail)
+                        .addField("Average Rating", averageRating == null ? DEFAULT_FIELD_VALUE : averageRating, true)
+                        .addField("Date", date.contains("null") ? DEFAULT_FIELD_VALUE : date, true)
+                        .addField("Status", status == null ? DEFAULT_FIELD_VALUE : status, false)
+                        .addField("Episode Count", episodeCount == null ? DEFAULT_FIELD_VALUE : Integer.toString(episodeCount), true)).block());
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
     private String handleTitle(Map<String, String> titles) {

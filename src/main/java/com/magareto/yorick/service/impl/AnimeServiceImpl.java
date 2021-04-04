@@ -1,6 +1,7 @@
 package com.magareto.yorick.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.models.anime.Anime;
 import com.magareto.yorick.models.anime.AnimeResponse;
@@ -37,14 +38,14 @@ public class AnimeServiceImpl implements AnimeService {
     public Anime getRandomRecommendationForGenres(List<String> genres) throws IOException, YorickException {
 
         Map<String, List<String>> filters = new HashMap<>();
-        filters.put("categories", genres);
+        filters.put("genres", genres);
 
         AnimeResponse animeResponse = findAll(filters);
 
         List<Anime> animeList = animeResponse.getData();
 
         if (animeList.isEmpty()) {
-            throw new YorickException("The genre/genres could not be found, maybe you misspelled something ?");
+            throw new YorickException(ErrorMessages.INVALID_GENRE);
         }
 
         Random random = new Random();

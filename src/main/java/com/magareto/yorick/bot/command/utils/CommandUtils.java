@@ -14,7 +14,7 @@ public class CommandUtils {
         }
 
         String[] splits = input.split(" ");
-        return splits[0].replaceFirst("\\" + Constants.PREFIX, "");
+        return splits[0].replaceFirst("" + Constants.PREFIX, "");
     }
 
     public static void sendMessage(Mono<MessageChannel> channelMono, String message) {
