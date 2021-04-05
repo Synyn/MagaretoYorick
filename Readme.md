@@ -1,4 +1,4 @@
-#MagaretoYorick Discord bot
+# MagaretoYorick Discord bot
 
 ### What is MagaretoYorick ?
 MagaretoYorick is a general purpose discord bot written in java, using the [D4J library](https://github.com/Discord4J/Discord4J).
