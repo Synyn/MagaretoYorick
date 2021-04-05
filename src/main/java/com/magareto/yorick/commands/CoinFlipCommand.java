@@ -1,5 +1,6 @@
 package com.magareto.yorick.commands;
 
+import com.magareto.yorick.bot.command.CommandModel;
 import com.magareto.yorick.bot.command.YorickCommand;
 import com.magareto.yorick.bot.command.annotations.Command;
 import com.magareto.yorick.bot.command.utils.CommandUtils;
@@ -13,6 +14,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Random;
 
 @Command(name = "flip")
@@ -21,9 +23,16 @@ public class CoinFlipCommand implements YorickCommand {
     Logger logger = Logger.getLogger(CoinFlipCommand.class);
 
     @Override
-    public void execute(Message message) throws YorickException, Exception {
+    public void execute(Message message, CommandModel commandModel) throws YorickException, Exception {
+        List<String> args = commandModel.getArgs();
 
-        CoinFlip bet = CoinFlip.getCoinFlip(message.getContent().split(" ")[1]);
+        if (args.size() > 1) {
+            throw new YorickException(ErrorMessages.TOO_MANY_ARGUMENTS);
+        } else if (args.size() < 1) {
+            throw new YorickException(ErrorMessages.NOT_ENOUGH_ARGUMENTS);
+        }
+
+        CoinFlip bet = CoinFlip.getCoinFlip(args.get(0));
         if (bet == null) {
             throw new YorickException(ErrorMessages.INVALID_BET);
         }

@@ -1,5 +1,6 @@
 package com.magareto.yorick.commands;
 
+import com.magareto.yorick.bot.command.CommandModel;
 import com.magareto.yorick.bot.command.YorickCommand;
 import com.magareto.yorick.bot.command.annotations.Command;
 import com.magareto.yorick.bot.command.utils.CommandUtils;
@@ -35,41 +36,18 @@ public class AnimeCommand implements YorickCommand {
     private AnimeService animeService = Globals.injector.getInstance(AnimeService.class);
 
     @Override
-    public void execute(Message message) throws YorickException, IOException, NotFoundException {
-        String content = message.getContent();
-        String[] arg = content.split(" ");
+    public void execute(Message message, CommandModel commandModel) throws YorickException, IOException, NotFoundException {
 
-        if (arg.length <= 1) {
-            throw new YorickException(ErrorMessages.INVALID_COMMAND);
-        }
-
-        Mono<MessageChannel> channel = message.getChannel();
-        String argument = null;
-        String filter = null;
-
-        if (arg[1].contains("=")) {
-            String[] split = arg[1].split("=");
-            argument = split[0];
-            filter = split[1];
-        } else {
-            filter = arg[1];
-        }
-
-        logger.info("Inside Anime command content -> " + content);
-        Anime anime = handleCommand(argument, filter);
-        sendAnime(channel, anime);
+        logger.info("Inside Anime command content -> " + message.getContent());
+        Anime anime = handleCommand(commandModel.getFlag(), commandModel.getArgs());
+        sendAnime(message.getChannel(), anime);
     }
 
-    private Anime handleCommand(String argument, String filter) throws YorickException, IOException, NotFoundException {
+    private Anime handleCommand(String flag, List<String> arguments) throws YorickException, IOException, NotFoundException {
         Anime anime = null;
 
-        List<String> listedParameters = null;
-
-        if (!filter.isEmpty()) {
-            listedParameters = Arrays.asList(filter.split(","));
-        }
-        if (argument == null || GENRE_ARGUMENT_LIST.contains(argument)) {
-            anime = animeService.getRandomRecommendationForGenres(listedParameters);
+        if (flag == null || GENRE_ARGUMENT_LIST.contains(flag)) {
+            anime = animeService.getRandomRecommendationForGenres(arguments);
         } else {
             throw new YorickException(ErrorMessages.INVALID_ARGUMENT);
         }
