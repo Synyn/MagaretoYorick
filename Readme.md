@@ -13,6 +13,7 @@ MagaretoYorick is a general purpose discord bot written in java, using the [D4J 
 
 1. Clone the repo `git clone https://github.com/superuacanea/MagaretoYorick`
 2. Provide [the token that you got from discord](https://discord.com/developers/applications) and set  an environment variable called `BOT_TOKEN` with the value of the discord provided token.
+3. Run the bot.
 
 ### License
 MIT
