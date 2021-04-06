@@ -64,7 +64,6 @@ public class CommandUtils {
             String[] split = args.split("=");
             if (split.length == 1) {
                 commaArgs = Arrays.asList(split[0].split(","));
-
             } else if (split.length == 2) {
                 flag = split[0];
                 commaArgs = Arrays.asList(split[1].split(","));
