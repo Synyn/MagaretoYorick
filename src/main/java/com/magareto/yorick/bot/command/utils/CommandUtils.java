@@ -5,6 +5,7 @@ import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import discord4j.core.object.entity.channel.MessageChannel;
+import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CommandUtils {
+
+    private static Logger logger = Logger.getLogger(CommandUtils.class);
 
     public static String formatCommand(String input) {
         if (!input.startsWith(Constants.PREFIX)) {
@@ -49,6 +52,7 @@ public class CommandUtils {
             args = initialSplit[1];
         }
 
+        logger.info("args -> " + args);
         return handleCommandModelCreation(formattedCommand, args);
 
     }
