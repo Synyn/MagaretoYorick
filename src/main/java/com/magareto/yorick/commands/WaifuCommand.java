@@ -31,7 +31,6 @@ public class WaifuCommand implements YorickCommand {
 
     @Override
     public void execute(Message message, CommandModel commandModel) {
-
         String tag = null;
 
         if (commandModel.getArgs() != null && !commandModel.getArgs().isEmpty()) {

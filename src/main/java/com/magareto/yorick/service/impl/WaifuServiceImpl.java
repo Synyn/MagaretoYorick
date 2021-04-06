@@ -44,12 +44,11 @@ public class WaifuServiceImpl implements WaifuService {
             "poke",
             "dance",
             "cringe",
-            "blush",
-            "random"));
+            "blush"));
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private final Set<String> nsfwGenre = new HashSet<>(Arrays.asList("waifu", "neko", "trap", "blowjob", "random"));
+    private final Set<String> nsfwGenre = new HashSet<>(Arrays.asList("waifu", "neko", "trap", "blowjob"));
 
     private final String BASE_URL_FORMATTABLE = "http://waifu.pics/api/%s/%s";
     private static final String DEFAULT_TAG = "waifu";

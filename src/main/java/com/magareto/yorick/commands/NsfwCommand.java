@@ -26,6 +26,10 @@ public class NsfwCommand implements YorickCommand {
         MessageChannel channel = message.getChannel().block();
         TextChannel tc = (TextChannel) channel;
 
+        if (message.getGuildId().get().asString().equals("571284439326392321")) {
+            return;
+        }
+
         if (!tc.isNsfw()) {
             throw new YorickException(ErrorMessages.NOT_NSFW_CHANNEL);
         }
