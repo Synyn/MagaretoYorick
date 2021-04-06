@@ -89,8 +89,6 @@ public class AnimeCommand implements YorickCommand {
                 e.printStackTrace();
             }
         }
-
-
     }
 
     private String handleListings(List<String> listings) {

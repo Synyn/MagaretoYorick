@@ -18,6 +18,6 @@ public class BotCommand implements YorickCommand {
         User user = message.getAuthor().get();
 
         logger.info("Mention -> " + user.getMention());
-        CommandUtils.sendMessage(message.getChannel(), user.getMention());
+        CommandUtils.sendMessage(message.getChannel(), user.getMention() + " pong !");
     }
 }

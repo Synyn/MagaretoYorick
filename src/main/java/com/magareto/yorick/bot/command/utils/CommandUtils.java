@@ -43,12 +43,13 @@ public class CommandUtils {
     public static CommandModel createCommandModelFromInput(String formattedCommand, String input) throws YorickException {
 
         String[] initialSplit = input.split(" ");
+        String args = null;
 
-//        if (initialSplit.length < 2) {
-//            throw new YorickException(ErrorMessages.INVALID_FLAG);
-//        }
+        if (initialSplit.length >= 2) {
+            args = initialSplit[1];
+        }
 
-        return handleCommandModelCreation(formattedCommand, initialSplit[1]);
+        return handleCommandModelCreation(formattedCommand, args);
 
     }
 
@@ -59,15 +60,17 @@ public class CommandUtils {
 
         List<String> commaArgs = null;
         String flag = null;
-        String[] split = args.split("=");
-        if (split.length == 1) {
-            commaArgs = Arrays.asList(split[0].split(","));
+        if (args != null) {
+            String[] split = args.split("=");
+            if (split.length == 1) {
+                commaArgs = Arrays.asList(split[0].split(","));
 
-        } else if (split.length == 2) {
-            flag = split[0];
-            commaArgs = Arrays.asList(split[1].split(","));
-        } else {
-            throw new YorickException(ErrorMessages.INVALID_COMMAND);
+            } else if (split.length == 2) {
+                flag = split[0];
+                commaArgs = Arrays.asList(split[1].split(","));
+            } else {
+                throw new YorickException(ErrorMessages.INVALID_COMMAND);
+            }
         }
 
         commandModel.setArgs(commaArgs);
