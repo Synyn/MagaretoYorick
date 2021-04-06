@@ -43,6 +43,22 @@ public class CommandUtils {
         channel.flatMap(c -> c.createMessage(sb.toString())).subscribe();
     }
 
+    public static void sendErrorMessage(Mono<MessageChannel> channel, Exception e) {
+        String errorMessage = e.getMessage();
+
+        if(!(e instanceof YorickException)) {
+            errorMessage = ErrorMessages.COMMAND_NOT_EXECUTABLE;
+        }
+
+        if (errorMessage == null) {
+            errorMessage = ErrorMessages.INVALID_COMMAND;
+        }
+
+        String finalErrorMessage = errorMessage;
+
+        channel.flatMap(c -> c.createMessage(finalErrorMessage)).subscribe();
+    }
+
     public static CommandModel createCommandModelFromInput(String formattedCommand, String input) throws YorickException {
 
         String[] initialSplit = input.split(" ");

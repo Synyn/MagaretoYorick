@@ -45,8 +45,9 @@ public class WaifuCommand implements YorickCommand {
 
                 message.getChannel().subscribe(c -> c.createEmbed(e -> e.setImage(sfw)).subscribe());
 
-            } catch (IOException e) {
-                CommandUtils.sendErrorMessage(message.getChannel(), new YorickException(ErrorMessages.CONNECTION_ERROR));
+            } catch (Exception e) {
+                e.printStackTrace();
+                CommandUtils.sendErrorMessage(message.getChannel(), e);
             }
         });
     }

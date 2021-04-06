@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface AnimeService {
     Anime getRecommendationForSeason(String season);
-    public Anime getRandomRecommendationForGenres(List<String> genres) throws YorickException, IOException, NotFoundException;
+    public Anime getRandomRecommendationForGenres(List<String> genres) throws YorickException;
 }

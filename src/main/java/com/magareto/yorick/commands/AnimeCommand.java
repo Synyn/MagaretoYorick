@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Command(name = "anime")
 public class AnimeCommand implements YorickCommand {
@@ -36,14 +37,22 @@ public class AnimeCommand implements YorickCommand {
     private AnimeService animeService = Globals.injector.getInstance(AnimeService.class);
 
     @Override
-    public void execute(Message message, CommandModel commandModel) throws YorickException, IOException, NotFoundException {
+    public void execute(Message message, CommandModel commandModel) {
 
         logger.info("Inside Anime command content -> " + message.getContent());
-        Anime anime = handleCommand(commandModel.getFlag(), commandModel.getArgs());
-        sendAnime(message.getChannel(), anime);
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                Anime anime = handleCommand(commandModel.getFlag(), commandModel.getArgs());
+                sendAnime(message.getChannel(), anime);
+            } catch (Exception e) {
+                e.printStackTrace();
+                CommandUtils.sendErrorMessage(message.getChannel(), e);
+            }
+        });
     }
 
-    private Anime handleCommand(String flag, List<String> arguments) throws YorickException, IOException, NotFoundException {
+    private Anime handleCommand(String flag, List<String> arguments) throws YorickException {
         Anime anime = null;
 
         if (flag == null || GENRE_ARGUMENT_LIST.contains(flag)) {

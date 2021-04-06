@@ -1,6 +1,7 @@
 package com.magareto.yorick.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.models.anime.Anime;
@@ -25,6 +26,7 @@ public class AnimeServiceImpl implements AnimeService {
     private final String KITSU_BASE_URL = "https://kitsu.io/api/edge";
     private final String ANIME_URL = "/anime";
 
+    private static final int STATUS_SUCCESS = 200;
 
     @Override
     public Anime getRecommendationForSeason(String season) {
@@ -33,10 +35,10 @@ public class AnimeServiceImpl implements AnimeService {
     }
 
     @Override
-    public Anime getRandomRecommendationForGenres(List<String> genres) throws IOException, YorickException {
+    public Anime getRandomRecommendationForGenres(List<String> genres) throws YorickException {
 
         Map<String, List<String>> filters = new HashMap<>();
-        if (!genres.isEmpty()) {
+        if (genres != null && !genres.isEmpty()) {
             filters.put("genres", genres);
         }
 
@@ -82,7 +84,7 @@ public class AnimeServiceImpl implements AnimeService {
     }
 
 
-    private AnimeResponse findAll(Map<String, List<String>> filters) throws IOException, YorickException {
+    private AnimeResponse findAll(Map<String, List<String>> filters) throws YorickException {
         CloseableHttpClient client = HttpClients.createDefault();
 
         String preUrl = "?sort=-averageRating&include=genres&page[limit]=20&page[offset]=";
@@ -99,25 +101,40 @@ public class AnimeServiceImpl implements AnimeService {
 
         String url = KITSU_BASE_URL + ANIME_URL + preUrl + offset + urlEncodeFilters;
 
-        return getAnimeResponse(url, client);
+        try {
+            return getAnimeResponse(url, client);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new YorickException(ErrorMessages.CONNECTION_ERROR);
+        }
 
     }
 
-    private int getCountForFilters(String filters, CloseableHttpClient client) throws IOException {
+    private int getCountForFilters(String filters, CloseableHttpClient client) throws YorickException {
         String preUrl = "?sort=-averageRating&page[limit]=1";
 
         String url = KITSU_BASE_URL + ANIME_URL + preUrl + filters;
 
-        AnimeResponse animeResponse = getAnimeResponse(url, client);
+        AnimeResponse animeResponse = null;
+        try {
+            animeResponse = getAnimeResponse(url, client);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new YorickException(ErrorMessages.CONNECTION_ERROR);
+        }
 
         return animeResponse.getMeta().getCount();
 
     }
 
-    private AnimeResponse getAnimeResponse(String url, CloseableHttpClient httpClient) throws IOException {
+    private AnimeResponse getAnimeResponse(String url, CloseableHttpClient httpClient) throws IOException, YorickException {
         logger.info("Full URL -> " + url);
         HttpGet httpGet = new HttpGet(url);
         CloseableHttpResponse resp = httpClient.execute(httpGet);
+
+        if (resp.getStatusLine().getStatusCode() == Constants.STATUS_NOT_FOUND) {
+            throw new YorickException(ErrorMessages.INVALID_GENRE);
+        }
 
         return mapper.readValue(resp.getEntity().getContent(), AnimeResponse.class);
 

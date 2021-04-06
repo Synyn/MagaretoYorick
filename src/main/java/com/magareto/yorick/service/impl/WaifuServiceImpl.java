@@ -3,6 +3,7 @@ package com.magareto.yorick.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magareto.yorick.bot.command.utils.CommandUtils;
+import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.service.WaifuService;
@@ -66,7 +67,7 @@ public class WaifuServiceImpl implements WaifuService {
     }
 
     @Override
-    public String getSfw(String tag) throws IOException {
+    public String getSfw(String tag) throws IOException, YorickException {
         if (tag == null) {
             tag = DEFAULT_TAG;
         }
@@ -76,64 +77,13 @@ public class WaifuServiceImpl implements WaifuService {
 
         CloseableHttpResponse response = client.execute(get);
 
+        if(response.getStatusLine().getStatusCode() == Constants.STATUS_NOT_FOUND){
+            throw new YorickException(ErrorMessages.WAIFU_NOT_FOUND);
+        }
+
         JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
 
         return jsonNode.get(URL_KEY).asText();
-
-    }
-
-    public void getSfwAsync(Mono<MessageChannel> channel, List<String> args) {
-        CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
-
-        String tag = DEFAULT_TAG;
-
-        if (args != null && !args.isEmpty()) {
-            tag = args.get(0);
-        }
-
-        String url = String.format(BASE_URL_FORMATTABLE, SFW_TYPE, tag);
-
-        HttpGet get = new HttpGet(url);
-
-        client.start();
-
-        client.execute(get, new FutureCallback<HttpResponse>() {
-            @Override
-            public void completed(HttpResponse httpResponse) {
-                try {
-
-                    JsonNode jsonNode = mapper.readTree(httpResponse.getEntity().getContent());
-                    String url = jsonNode.get(URL_KEY).asText();
-
-                    channel.subscribe(c -> c.createEmbed(e -> e.setImage(url)).block());
-
-                } catch (IOException e) {
-                    CommandUtils.sendErrorMessage(channel, new YorickException(ErrorMessages.CONNECTION_ERROR));
-                }finally {
-                    try {
-                        client.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void failed(Exception e) {
-                e.printStackTrace();
-                try {
-                    client.close();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-                CommandUtils.sendErrorMessage(channel, new YorickException(ErrorMessages.CONNECTION_ERROR));
-            }
-
-            @Override
-            public void cancelled() {
-
-            }
-        });
 
     }
 }

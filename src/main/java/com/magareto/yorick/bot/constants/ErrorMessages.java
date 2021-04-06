@@ -11,6 +11,8 @@ public class ErrorMessages {
     public static final String TOO_MANY_ARGUMENTS = "You provided too many arguments.";
     public static final String NOT_ENOUGH_ARGUMENTS = "You did not provide the needed number of arguments.";
     public static final String  CONNECTION_ERROR = "There seems to be an error with the connection.";
+    public static final String WAIFU_NOT_FOUND = "The waifu was not found...";
+    public static final String COMMAND_NOT_EXECUTABLE = "Command is not executable.";
 
     public static String COMMAND_CLASS_NOT_VALID = "There seems to be an annotated command, which does not implement the \" +\n" +
             "                        \"YorickCommand class.";

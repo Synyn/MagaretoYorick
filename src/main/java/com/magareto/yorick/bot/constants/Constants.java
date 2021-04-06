@@ -5,4 +5,5 @@ public class Constants {
 
     public static final String PREFIX = "y!";
     public static final String HELP_COMMAND = "help";
+    public static final int STATUS_NOT_FOUND = 404;
 }

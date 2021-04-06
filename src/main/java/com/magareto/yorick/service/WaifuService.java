@@ -1,5 +1,6 @@
 package com.magareto.yorick.service;
 
+import com.magareto.yorick.bot.exception.YorickException;
 import discord4j.core.object.entity.channel.MessageChannel;
 import reactor.core.publisher.Mono;
 
@@ -8,6 +9,5 @@ import java.util.List;
 
 public interface WaifuService {
     String getNsfw(String tag);
-    String getSfw(String tag) throws IOException;
-    void getSfwAsync(Mono<MessageChannel> channel, List<String> tag);
+    String getSfw(String tag) throws IOException, YorickException;
 }
