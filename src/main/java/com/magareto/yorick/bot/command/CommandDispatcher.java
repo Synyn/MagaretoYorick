@@ -26,11 +26,9 @@ public class CommandDispatcher {
             */
             if (formattedCommand == null) {
                 return;
-
             }
 
             YorickCommand command = Globals.commands.get(formattedCommand);
-
             if (command == null) {
                 CommandUtils.sendMessage(message.getChannel(), String.format(ErrorMessages.COMMAND_NOT_FOUND, Constants.PREFIX + formattedCommand, Constants.PREFIX + Constants.HELP_COMMAND));
                 return;

@@ -58,6 +58,6 @@ public class CoinFlipCommand implements YorickCommand {
         }
 
         CommandUtils.sendMessage(message.getChannel(),
-                String.format(Messages.COINFLIP_MESSAGE, username, result, bet.name(), flip.name()));
+                String.format(Messages.COINFLIP_MESSAGE, author.getMention(), result, bet.name(), flip.name()));
     }
 }

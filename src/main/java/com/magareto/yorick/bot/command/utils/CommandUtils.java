@@ -44,9 +44,9 @@ public class CommandUtils {
 
         String[] initialSplit = input.split(" ");
 
-        if (initialSplit.length < 2) {
-            throw new YorickException(ErrorMessages.INVALID_FLAG);
-        }
+//        if (initialSplit.length < 2) {
+//            throw new YorickException(ErrorMessages.INVALID_FLAG);
+//        }
 
         return handleCommandModelCreation(formattedCommand, initialSplit[1]);
 
