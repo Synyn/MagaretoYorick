@@ -8,6 +8,5 @@ import java.io.IOException;
 import java.util.List;
 
 public interface WaifuService {
-    String getNsfw(String tag);
-    String getSfw(String tag) throws IOException, YorickException;
+    String getContent(String tag, boolean nsfw) throws IOException, YorickException;
 }

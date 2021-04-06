@@ -18,8 +18,6 @@ public class CommandDispatcher {
         String formattedCommand = CommandUtils.formatCommand(message.getContent());
 
         try {
-
-
             logger.info("Formatted command -> " + formattedCommand);
             /**
                 * This means that this was not actually a command, but just a message

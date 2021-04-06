@@ -13,6 +13,7 @@ public class ErrorMessages {
     public static final String  CONNECTION_ERROR = "There seems to be an error with the connection.";
     public static final String WAIFU_NOT_FOUND = "The waifu was not found...";
     public static final String COMMAND_NOT_EXECUTABLE = "Command is not executable.";
+    public static final String NOT_NSFW_CHANNEL = "This channel is not an nsfw channel, I cannot send nsfw content here.";
 
     public static String COMMAND_CLASS_NOT_VALID = "There seems to be an annotated command, which does not implement the \" +\n" +
             "                        \"YorickCommand class.";

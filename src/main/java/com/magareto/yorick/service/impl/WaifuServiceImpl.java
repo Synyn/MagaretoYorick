@@ -61,23 +61,24 @@ public class WaifuServiceImpl implements WaifuService {
 
     CloseableHttpClient client = HttpClients.createDefault();
 
-    @Override
-    public String getNsfw(String tag) {
-        return null;
-    }
 
     @Override
-    public String getSfw(String tag) throws IOException, YorickException {
+    public String getContent(String tag, boolean nsfw) throws IOException, YorickException {
+
         if (tag == null) {
             tag = DEFAULT_TAG;
+        } else if ((!sfwGenres.contains(tag) && !nsfw) || (!nsfwGenre.contains(tag) && nsfw)) {
+            throw new YorickException(ErrorMessages.INVALID_GENRE);
         }
 
-        String url = String.format(BASE_URL_FORMATTABLE, SFW_TYPE, tag);
+        String type = nsfw ? NSFW_TYPE : SFW_TYPE;
+
+        String url = String.format(BASE_URL_FORMATTABLE, type, tag);
         HttpGet get = new HttpGet(url);
 
         CloseableHttpResponse response = client.execute(get);
 
-        if(response.getStatusLine().getStatusCode() == Constants.STATUS_NOT_FOUND){
+        if (response.getStatusLine().getStatusCode() == Constants.STATUS_NOT_FOUND) {
             throw new YorickException(ErrorMessages.WAIFU_NOT_FOUND);
         }
 
