@@ -4,6 +4,7 @@ import com.magareto.yorick.bot.command.CommandModel;
 import com.magareto.yorick.bot.command.YorickCommand;
 import com.magareto.yorick.bot.command.annotations.Command;
 import com.magareto.yorick.bot.command.utils.CommandUtils;
+import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.service.WaifuService;
@@ -12,7 +13,8 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
-import java.io.InputStream;
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 @Command(name = "waifu")
 public class WaifuCommand implements YorickCommand {
@@ -21,23 +23,31 @@ public class WaifuCommand implements YorickCommand {
 
     private Logger logger = Logger.getLogger(WaifuCommand.class);
 
+    private Runnable executeTask(Mono<MessageChannel> channel, CommandModel commandModel) throws IOException {
+
+
+        return null;
+    }
+
     @Override
-    public void execute(Message message, CommandModel commandModel) throws YorickException, Exception {
+    public void execute(Message message, CommandModel commandModel) {
 
-        Mono<MessageChannel> channel = message.getChannel();
-        String picture = null;
+        String tag = null;
 
-
-        if (commandModel.getArgs() == null) {
-            picture = waifuService.getSfw(null);
-        }else {
-            logger.info("Flag -> " + commandModel.getArgs().get(0));
-            picture = waifuService.getSfw(commandModel.getArgs().get(0));
+        if (commandModel.getArgs() != null && !commandModel.getArgs().isEmpty()) {
+            tag = commandModel.getArgs().get(0);
         }
 
+        String finalTag = tag;
+        CompletableFuture.runAsync(() -> {
+            try {
+                String sfw = waifuService.getSfw(finalTag);
 
-        String finalPicture = picture;
-        channel.subscribe(c -> c.createEmbed(e -> e.setImage(finalPicture)).block());
+                message.getChannel().subscribe(c -> c.createEmbed(e -> e.setImage(sfw)).subscribe());
 
+            } catch (IOException e) {
+                CommandUtils.sendErrorMessage(message.getChannel(), new YorickException(ErrorMessages.CONNECTION_ERROR));
+            }
+        });
     }
 }

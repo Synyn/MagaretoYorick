@@ -10,6 +10,7 @@ public class ErrorMessages {
     public static final String COMMAND_NOT_FOUND = "The command %s was not found. Type %s for more information.";
     public static final String TOO_MANY_ARGUMENTS = "You provided too many arguments.";
     public static final String NOT_ENOUGH_ARGUMENTS = "You did not provide the needed number of arguments.";
+    public static final String  CONNECTION_ERROR = "There seems to be an error with the connection.";
 
     public static String COMMAND_CLASS_NOT_VALID = "There seems to be an annotated command, which does not implement the \" +\n" +
             "                        \"YorickCommand class.";

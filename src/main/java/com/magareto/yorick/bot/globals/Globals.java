@@ -4,6 +4,8 @@ import com.google.inject.Injector;
 import com.magareto.yorick.bot.command.YorickCommand;
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Globals {
     /**

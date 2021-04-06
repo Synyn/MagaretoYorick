@@ -2,18 +2,25 @@ package com.magareto.yorick.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.magareto.yorick.bot.command.utils.CommandUtils;
+import com.magareto.yorick.bot.constants.ErrorMessages;
+import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.service.WaifuService;
+import discord4j.core.object.entity.channel.MessageChannel;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
+import reactor.core.publisher.Mono;
 
-import java.awt.*;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class WaifuServiceImpl implements WaifuService {
@@ -50,6 +57,9 @@ public class WaifuServiceImpl implements WaifuService {
 
     private static final String URL_KEY = "url";
 
+
+    CloseableHttpClient client = HttpClients.createDefault();
+
     @Override
     public String getNsfw(String tag) {
         return null;
@@ -64,15 +74,66 @@ public class WaifuServiceImpl implements WaifuService {
         String url = String.format(BASE_URL_FORMATTABLE, SFW_TYPE, tag);
         HttpGet get = new HttpGet(url);
 
-
-        CloseableHttpClient aDefault = HttpClients.createDefault();
-        CloseableHttpResponse response = aDefault.execute(get);
-
+        CloseableHttpResponse response = client.execute(get);
 
         JsonNode jsonNode = mapper.readTree(response.getEntity().getContent());
 
         return jsonNode.get(URL_KEY).asText();
 
+    }
+
+    public void getSfwAsync(Mono<MessageChannel> channel, List<String> args) {
+        CloseableHttpAsyncClient client = HttpAsyncClients.createDefault();
+
+        String tag = DEFAULT_TAG;
+
+        if (args != null && !args.isEmpty()) {
+            tag = args.get(0);
+        }
+
+        String url = String.format(BASE_URL_FORMATTABLE, SFW_TYPE, tag);
+
+        HttpGet get = new HttpGet(url);
+
+        client.start();
+
+        client.execute(get, new FutureCallback<HttpResponse>() {
+            @Override
+            public void completed(HttpResponse httpResponse) {
+                try {
+
+                    JsonNode jsonNode = mapper.readTree(httpResponse.getEntity().getContent());
+                    String url = jsonNode.get(URL_KEY).asText();
+
+                    channel.subscribe(c -> c.createEmbed(e -> e.setImage(url)).block());
+
+                } catch (IOException e) {
+                    CommandUtils.sendErrorMessage(channel, new YorickException(ErrorMessages.CONNECTION_ERROR));
+                }finally {
+                    try {
+                        client.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void failed(Exception e) {
+                e.printStackTrace();
+                try {
+                    client.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+                CommandUtils.sendErrorMessage(channel, new YorickException(ErrorMessages.CONNECTION_ERROR));
+            }
+
+            @Override
+            public void cancelled() {
+
+            }
+        });
 
     }
 }
