@@ -12,7 +12,9 @@ import com.magareto.yorick.models.anime.Attributes;
 import com.magareto.yorick.service.AnimeService;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import io.netty.util.internal.StringUtil;
 import javassist.NotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
@@ -23,6 +25,8 @@ import java.util.concurrent.CompletableFuture;
 @Command(name = "anime")
 public class AnimeCommand implements YorickCommand {
     private Logger logger = Logger.getLogger(AnimeCommand.class);
+
+    private final static String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
     public static final Set<String> GENRE_ARGUMENT_LIST = new HashSet<>(Arrays.asList("genre", "genres"));
 
@@ -67,7 +71,7 @@ public class AnimeCommand implements YorickCommand {
 
         Attributes attributes = anime.getAttributes();
         String title = handleTitle(anime.getAttributes().getTitles());
-        String url = anime.getLinks().getSelf();
+        String url = StringUtils.isBlank(attributes.getYoutubeVideoId()) ? "" : YOUTUBE_BASE_URL + attributes.getYoutubeVideoId();
         String description = attributes.getDescription();
         String thumbnail = attributes.getPosterImage().getLarge();
         String genres = handleListings(anime.getGenres());
