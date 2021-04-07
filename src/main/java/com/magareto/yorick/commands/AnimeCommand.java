@@ -31,7 +31,6 @@ public class AnimeCommand implements YorickCommand {
     private static final String TITLE_ENG_JP = "en_jp";
     private static final String TITLE_JP = "ja_jp";
 
-
     private static final String DEFAULT_FIELD_VALUE = "Unknown";
 
     private AnimeService animeService = Globals.injector.getInstance(AnimeService.class);
