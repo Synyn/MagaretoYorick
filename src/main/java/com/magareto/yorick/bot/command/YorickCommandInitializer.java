@@ -15,8 +15,8 @@ public class YorickCommandInitializer {
 
     private static Logger logger = Logger.getLogger(YorickCommandInitializer.class);
 
-    public static Map<String, YorickCommand> initializeCommands() throws Exception {
-        Map<String, YorickCommand> commands = new HashMap<>();
+    public static Map<String, InternalCommand> initializeCommands() throws Exception {
+        Map<String, InternalCommand> commands = new HashMap<>();
 
         Reflections reflections = new Reflections("com.magareto.yorick");
 
@@ -47,8 +47,9 @@ public class YorickCommandInitializer {
             YorickCommand command = (YorickCommand) object;
 
             String commandName = annotation.name();
+            InternalCommand internalCommand = new InternalCommand(annotation.name(), annotation.description(), command);
 
-            commands.put(commandName, command);
+            commands.put(commandName, internalCommand);
         }
 
         return commands;

@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class WaifuServiceImpl implements WaifuService {
 
-    private final Set<String> sfwGenres = new HashSet<>(Arrays.asList("waifu",
+    public static final Set<String> sfwGenres = new HashSet<>(Arrays.asList("waifu",
             "neko",
             "shinobu",
             "bully",
@@ -40,7 +40,7 @@ public class WaifuServiceImpl implements WaifuService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private final Set<String> nsfwGenres = new HashSet<>(Arrays.asList("waifu", "neko", "trap", "blowjob"));
+    public static final Set<String> nsfwGenres = new HashSet<>(Arrays.asList("waifu", "neko", "trap", "blowjob"));
 
     private final String BASE_URL_FORMATTABLE = "http://waifu.pics/api/%s/%s";
     private static final String DEFAULT_TAG = "waifu";

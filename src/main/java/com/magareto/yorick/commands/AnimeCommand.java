@@ -4,6 +4,7 @@ import com.magareto.yorick.bot.command.CommandModel;
 import com.magareto.yorick.bot.command.YorickCommand;
 import com.magareto.yorick.bot.command.annotations.Command;
 import com.magareto.yorick.bot.command.utils.CommandUtils;
+import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.Globals;
@@ -22,7 +23,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-@Command(name = "anime")
+@Command(name = "anime", description = "Recommends anime.")
 public class AnimeCommand implements YorickCommand {
     private Logger logger = Logger.getLogger(AnimeCommand.class);
 
@@ -95,7 +96,7 @@ public class AnimeCommand implements YorickCommand {
                         .addField("Average Rating", averageRating == null ? DEFAULT_FIELD_VALUE : averageRating, true)
                         .addField("Date", date.contains("null") ? DEFAULT_FIELD_VALUE : date, false)
                         .addField("Status", status == null ? DEFAULT_FIELD_VALUE : status, true)
-                        .addField("Episode Count", episodeCount == null ? DEFAULT_FIELD_VALUE : Integer.toString(episodeCount), true)).block());
+                        .addField("Episode Count", episodeCount == null ? DEFAULT_FIELD_VALUE : Integer.toString(episodeCount), true)).subscribe());
                 break;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -133,6 +134,12 @@ public class AnimeCommand implements YorickCommand {
         }
 
         return title;
+    }
+
+
+    @Override
+    public List<String> getArguments() {
+        return null;
     }
 
 }

@@ -8,15 +8,17 @@ import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.service.WaifuService;
+import com.magareto.yorick.service.impl.AnimeServiceImpl;
 import com.magareto.yorick.service.impl.WaifuServiceImpl;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.TextChannel;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@Command(name = "nsfw")
+@Command(name = "nsfw", description = "Send an NSFW picture if called in a nsfw channel.")
 public class NsfwCommand implements YorickCommand {
 
     private WaifuService waifuService = Globals.injector.getInstance(WaifuService.class);
@@ -49,11 +51,16 @@ public class NsfwCommand implements YorickCommand {
                 message.getChannel().subscribe(c -> c.createEmbed(e -> e.setImage(nsfw)).subscribe());
 
 
-
             } catch (Exception e) {
                 CommandUtils.sendErrorMessage(message.getChannel(), e);
             }
         });
 
     }
+
+    @Override
+    public List<String> getArguments() {
+        return new ArrayList<>(WaifuServiceImpl.nsfwGenres);
+    }
+
 }

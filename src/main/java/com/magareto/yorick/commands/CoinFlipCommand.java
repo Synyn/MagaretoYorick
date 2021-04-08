@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Command(name = "flip")
@@ -43,6 +44,11 @@ public class CoinFlipCommand implements YorickCommand {
         flip = random.nextInt(100) < 50 ? CoinFlip.TAILS : CoinFlip.HEADS;
 
         sendFlip(message, bet, flip);
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return null;
     }
 
     private void sendFlip(Message message, CoinFlip bet, CoinFlip flip) {
