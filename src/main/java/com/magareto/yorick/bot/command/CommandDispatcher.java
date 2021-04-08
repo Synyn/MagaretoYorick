@@ -144,8 +144,6 @@ public class CommandDispatcher {
             description.append("\n");
         }
 
-        description.append("\n");
-
 
         if (examples.size() > 1) {
             description.append("\n**Usages**: ");
