@@ -7,7 +7,15 @@ import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.bot.injector.YorickInjectorConfig;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.presence.Activity;
+import discord4j.core.object.presence.Status;
+import discord4j.discordjson.json.ActivityUpdateRequest;
+import discord4j.discordjson.json.gateway.ImmutableStatusUpdate;
+import discord4j.discordjson.json.gateway.StatusUpdate;
 import org.apache.log4j.Logger;
+
+import java.util.Optional;
 
 public class MagaretoYorick {
     private GatewayDiscordClient client;
@@ -32,6 +40,12 @@ public class MagaretoYorick {
                 .build()
                 .login()
                 .block();
+
+
+        StatusUpdate statusUpdate = ImmutableStatusUpdate.builder().afk(true).status("y!help").game(Activity.listening("to y!help")).build();
+
+        client.updatePresence(statusUpdate).subscribe();
+
 
         EventDispatcher.dispatchEvents(client);
 
