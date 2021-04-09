@@ -30,8 +30,7 @@ public class MagaretoYorick {
             Globals.commands = YorickCommandInitializer.initializeCommands();
             Globals.commands.forEach((k, v) -> logger.info("Command Name -> " + k));
         } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            throw new RuntimeException(e);
         }
 
         final String BOT_TOKEN = System.getenv(Constants.BOT_TOKEN_ENV);
@@ -45,7 +44,6 @@ public class MagaretoYorick {
         StatusUpdate statusUpdate = ImmutableStatusUpdate.builder().afk(true).status("y!help").game(Activity.listening("to y!help")).build();
 
         client.updatePresence(statusUpdate).subscribe();
-
 
         EventDispatcher.dispatchEvents(client);
 

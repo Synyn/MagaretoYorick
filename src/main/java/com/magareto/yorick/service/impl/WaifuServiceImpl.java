@@ -39,7 +39,6 @@ public class WaifuServiceImpl implements WaifuService {
             "blush"));
 
     private final ObjectMapper mapper = new ObjectMapper();
-
     public static final Set<String> nsfwGenres = new HashSet<>(Arrays.asList("waifu", "neko", "trap", "blowjob"));
 
     private final String BASE_URL_FORMATTABLE = "http://waifu.pics/api/%s/%s";

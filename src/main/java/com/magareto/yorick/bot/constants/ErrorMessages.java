@@ -15,6 +15,7 @@ public class ErrorMessages {
     public static final String COMMAND_NOT_EXECUTABLE = "Command is not executable.";
     public static final String NOT_NSFW_CHANNEL = "This channel is not an nsfw channel, I cannot send nsfw content here.";
     public static final String COMMAND_NOT_YET_IMPLEMENTED = "This command is not implemented yet.";
+    public static final String NOT_FOUND = "This resource was not found.";
 
     public static String COMMAND_CLASS_NOT_VALID = "There seems to be an annotated command, which does not implement the \" +\n" +
             "                        \"YorickCommand class.";
