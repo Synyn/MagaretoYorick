@@ -36,8 +36,8 @@ public class MemeServiceImpl implements MemeService {
             throw new YorickException(ErrorMessages.NOT_FOUND);
         }
 
+        client.close();
         return getLink(response.getEntity().getContent());
-
     }
 
     private String getLink(InputStream content) throws IOException {
@@ -49,7 +49,18 @@ public class MemeServiceImpl implements MemeService {
     }
 
     @Override
-    public String getMeme(String subReddit) {
-        return null;
+    public String getMeme(String subReddit) throws IOException, YorickException {
+
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet get = new HttpGet(BASE_URL + subReddit);
+        CloseableHttpResponse response = client.execute(get);
+
+        if (response.getStatusLine().getStatusCode() != SUCCESS_CODE) {
+            throw new YorickException(ErrorMessages.NOT_FOUND);
+        }
+
+
+        return getLink(response.getEntity().getContent());
+
     }
 }

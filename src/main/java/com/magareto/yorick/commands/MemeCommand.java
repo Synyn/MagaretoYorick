@@ -17,9 +17,16 @@ public class MemeCommand implements YorickCommand {
 
     @Override
     public void execute(Message message, CommandModel commandModel) throws YorickException, Exception {
-        String link = memeService.getMeme();
+        String link = null;
 
-        message.getChannel().subscribe(c -> c.createEmbed(e -> e.setImage(link)).subscribe());
+        if (commandModel.getArgs() == null || commandModel.getArgs().isEmpty()) {
+            link = memeService.getMeme();
+        } else {
+            link = memeService.getMeme(commandModel.getArgs().get(0));
+        }
+
+        String finalLink = link;
+        message.getChannel().subscribe(c -> c.createEmbed(e -> e.setImage(finalLink)).subscribe());
 
     }
 

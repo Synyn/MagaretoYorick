@@ -7,5 +7,5 @@ import java.net.MalformedURLException;
 
 public interface MemeService {
     String getMeme() throws IOException, YorickException;
-    String getMeme(String subReddit);
+    String getMeme(String subReddit) throws IOException, YorickException;
 }
