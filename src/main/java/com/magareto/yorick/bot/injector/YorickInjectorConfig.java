@@ -1,12 +1,8 @@
 package com.magareto.yorick.bot.injector;
 
 import com.google.inject.AbstractModule;
-import com.magareto.yorick.service.AnimeService;
-import com.magareto.yorick.service.MemeService;
-import com.magareto.yorick.service.WaifuService;
-import com.magareto.yorick.service.impl.AnimeServiceImpl;
-import com.magareto.yorick.service.impl.MemeServiceImpl;
-import com.magareto.yorick.service.impl.WaifuServiceImpl;
+import com.magareto.yorick.service.*;
+import com.magareto.yorick.service.impl.*;
 
 public class YorickInjectorConfig extends AbstractModule {
     @Override
@@ -14,5 +10,7 @@ public class YorickInjectorConfig extends AbstractModule {
         bind(AnimeService.class).to(AnimeServiceImpl.class);
         bind(WaifuService.class).to(WaifuServiceImpl.class);
         bind(MemeService.class).to(MemeServiceImpl.class);
+        bind(HelpService.class).to(HelpServiceImpl.class);
+        bind(CommandService.class).to(CommandServiceImpl.class);
     }
 }
