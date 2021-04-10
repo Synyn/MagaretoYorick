@@ -10,7 +10,6 @@ public class OsuFactory {
     public static Osu createOsu(OsuServer server) throws YorickException {
         Osu osu = null;
 
-
         switch (server) {
             case BANCHO -> new BanchoStrategy();
             case GATARI -> new GatariStrategy();
