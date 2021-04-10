@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class HelpServiceImpl implements HelpService {
 
-    Logger logger = Logger.getLogger(HelpServiceImpl.class);
+    private Logger logger = Logger.getLogger(HelpServiceImpl.class);
 
     private void handleHelpForCommands(List<InternalCommand> helpForCommands, Mono<MessageChannel> channel) {
         StringBuilder sb = new StringBuilder();
@@ -45,9 +45,7 @@ public class HelpServiceImpl implements HelpService {
         }
 
         StringBuilder description = new StringBuilder();
-
         description.append(String.format(Messages.HELP_DESCRIPTION, internalCommand.getDescription()));
-
 
         List<String> arguments = internalCommand.getCommand().getArguments();
         // TODO Implement flags

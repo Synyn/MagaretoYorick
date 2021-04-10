@@ -35,6 +35,8 @@ public class MagaretoYorick {
             throw new RuntimeException(e);
         }
 
+        Globals.redisConnection = RedisInitalizer.createConnection(Constants.REDIS_HOSTNAME);
+
         final String BOT_TOKEN = System.getenv(Constants.BOT_TOKEN_ENV);
 
         client = DiscordClientBuilder.create(BOT_TOKEN)
@@ -48,9 +50,9 @@ public class MagaretoYorick {
 
         EventDispatcher.dispatchEvents(client);
 
-        CronInitializer.registerCronJobs(client, RedisInitalizer.createConnection(Constants.REDIS_HOSTNAME));
+//        CronInitializer.registerCronJobs(client, RedisInitalizer.createConnection(Constants.REDIS_HOSTNAME));
+//        RedisInitalizer.registerSubscribers(client);
 
-        RedisInitalizer.registerSubscribers(client);
 
         client.onDisconnect().block();
     }

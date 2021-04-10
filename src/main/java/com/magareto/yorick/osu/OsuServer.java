@@ -1,14 +1,33 @@
 package com.magareto.yorick.osu;
 
+import org.codehaus.plexus.util.Os;
+
 public enum OsuServer {
+    BANCHO("osu.ppy.sh"), GATARI("osu.gatari.pw");
 
-    BANCHO(1), GATARI(2);
+    private String server;
 
-    int id;
-
-    OsuServer(int id) {
-        this.id = id;
+    OsuServer(String server) {
+        this.server = server;
     }
 
+    public String getServer() {
+        return server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+
+    public static OsuServer getServerByName(String serverName) {
+        for (OsuServer os : OsuServer.values()) {
+            if (os.getServer().equals(serverName)) {
+                return os;
+            }
+        }
+
+        return null;
+    }
 
 }

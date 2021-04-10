@@ -15,6 +15,7 @@ public class OnMessageEvent implements Consumer<MessageCreateEvent> {
     @Override
     public void accept(MessageCreateEvent e) {
         logger.info("New Message -> " + e.getMessage().getContent());
+
         Optional<User> author = e.getMessage().getAuthor();
         if (isUserBot(author)) {
             logger.info("User is bot");

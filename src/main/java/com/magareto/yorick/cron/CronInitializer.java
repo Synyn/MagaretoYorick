@@ -12,7 +12,10 @@ public class CronInitializer {
         Timer timer = new Timer();
 
         // Register the osu score polling cron job
+
         timer.scheduleAtFixedRate(new ScoreCronJob(connection), 0, 10000);
+
+
     }
 
 }

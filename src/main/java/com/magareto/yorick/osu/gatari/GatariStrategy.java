@@ -11,4 +11,9 @@ public class GatariStrategy implements Osu {
     public List<BaseScoreModel> getRecentScoresForUser(String userId) {
         return null;
     }
+
+    @Override
+    public String getUserIdFromLink(String link) {
+        return null;
+    }
 }
