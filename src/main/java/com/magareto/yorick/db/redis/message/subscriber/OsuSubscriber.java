@@ -100,7 +100,7 @@ public class OsuSubscriber extends JedisPubSub {
                     .addField("Miss count", scoreModel.getMissCount(), true)
                     .addField("Mode ", scoreModel.getGameMode(), true)
 
-                    .setAuthor(scoreModel.getUsername(), finalUserLink + scoreModel.getUserId(), "https://osu.ppy.sh" + scoreModel.getUserAvatarUrl())
+                    .setAuthor(scoreModel.getUsername(), finalUserLink + scoreModel.getUserId(), scoreModel.getUserAvatarUrl().contains("https://a.ppy.sh") ? scoreModel.getUserAvatarUrl() : "https://osu.ppy.sh" + scoreModel.getUserAvatarUrl())
 
                     .setFooter(discordUser.getUsername() + " just landed a new score !", discordUser.getAvatarUrl())
 
