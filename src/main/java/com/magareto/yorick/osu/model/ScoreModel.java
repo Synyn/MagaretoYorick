@@ -22,6 +22,17 @@ public class ScoreModel {
     private String bpm;
     private String starRating;
     private String difficulty;
+    private String beatMapName;
+    private String userAvatarUrl;
+    private String missCount;
+
+    public String getMissCount() {
+        return missCount;
+    }
+
+    public void setMissCount(String missCount) {
+        this.missCount = missCount;
+    }
 
     public String getBpm() {
         return bpm;
@@ -141,5 +152,21 @@ public class ScoreModel {
 
     public void setDifficulty(String difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public String getBeatMapName() {
+        return beatMapName;
+    }
+
+    public void setBeatMapName(String beatMapName) {
+        this.beatMapName = beatMapName;
+    }
+
+    public void setUserAvatarUrl(String userAvatarUrl) {
+        this.userAvatarUrl = userAvatarUrl;
+    }
+
+    public String getUserAvatarUrl() {
+        return userAvatarUrl;
     }
 }

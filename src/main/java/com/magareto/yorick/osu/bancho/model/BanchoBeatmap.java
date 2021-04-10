@@ -88,4 +88,6 @@ public class BanchoBeatmap {
     public void setVersion(String version) {
         this.version = version;
     }
+
+
 }

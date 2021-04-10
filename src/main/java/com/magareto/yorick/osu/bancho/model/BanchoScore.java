@@ -6,6 +6,7 @@ import com.magareto.yorick.osu.BaseScoreModel;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BanchoScore {
@@ -22,7 +23,10 @@ public class BanchoScore {
     private Double pp;
     private String mode;
     private BanchoBeatmap beatmap;
+    @JsonProperty("beatmapset")
+    private BeatmapSet beatmapSet;
     private BanchoUser user;
+    private Map<String, Integer> statistics;
 
     public Long getId() {
         return id;
@@ -111,5 +115,21 @@ public class BanchoScore {
 
     public void setUser(BanchoUser user) {
         this.user = user;
+    }
+
+    public BeatmapSet getBeatmapSet() {
+        return beatmapSet;
+    }
+
+    public void setBeatmapSet(BeatmapSet beatmapSet) {
+        this.beatmapSet = beatmapSet;
+    }
+
+    public Map<String, Integer> getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(Map<String, Integer> statistics) {
+        this.statistics = statistics;
     }
 }

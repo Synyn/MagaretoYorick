@@ -63,7 +63,6 @@ public class ScoreCronJob extends TimerTask {
         }
 
         Calendar userLastScoreDate = (Calendar) user.getLastScoreDate().clone();
-        boolean update = false;
 
         logger.info("User current score -> " + userLastScoreDate.getTime().toString());
 
@@ -76,15 +75,17 @@ public class ScoreCronJob extends TimerTask {
                 logger.info("Publishing score -> " + recentScore.getCreatedAt());
 
                 userLastScoreDate = recentScore.getCreatedAt();
-                update = true;
+
+                connection.srem(RedisConstants.OSU_TRACK_LIST, mapper.writeValueAsString(user));
+                user.setLastScoreDate(userLastScoreDate);
+                connection.sadd(RedisConstants.OSU_TRACK_LIST, mapper.writeValueAsString(user));
+
                 connection.publish(Channel.OSU.name(), mapper.writeValueAsString(recentScore));
             }
         }
 
-        if (update) {
-            connection.srem(RedisConstants.OSU_TRACK_LIST, mapper.writeValueAsString(user));
-            user.setLastScoreDate(userLastScoreDate);
-            connection.sadd(RedisConstants.OSU_TRACK_LIST, mapper.writeValueAsString(user));
-        }
+
+        // We are actually pinging the channel so it wont go down.
+        connection.publish(Channel.OSU.name(), "ping");
     }
 }
