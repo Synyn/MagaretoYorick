@@ -5,6 +5,8 @@ import com.magareto.yorick.bot.command.YorickCommandInitializer;
 import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.bot.injector.YorickInjectorConfig;
+import com.magareto.yorick.cron.CronInitializer;
+import com.magareto.yorick.db.redis.RedisInitalizer;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.User;
@@ -42,10 +44,13 @@ public class MagaretoYorick {
 
 
         StatusUpdate statusUpdate = ImmutableStatusUpdate.builder().afk(true).status("y!help").game(Activity.listening("to y!help")).build();
-
         client.updatePresence(statusUpdate).subscribe();
 
         EventDispatcher.dispatchEvents(client);
+
+        CronInitializer.registerCronJobs(client, RedisInitalizer.createConnection(Constants.REDIS_HOSTNAME));
+
+        RedisInitalizer.registerSubscribers(client);
 
         client.onDisconnect().block();
     }

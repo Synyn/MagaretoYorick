@@ -17,6 +17,8 @@ public class ErrorMessages {
     public static final String COMMAND_NOT_YET_IMPLEMENTED = "This command is not implemented yet.";
     public static final String NOT_FOUND = "This resource was not found.";
 
+
+    public static final String INVALID_OSU_SERVER = "The server that is specified in this message seems to be invalid.";
     public static String COMMAND_CLASS_NOT_VALID = "There seems to be an annotated command, which does not implement the \" +\n" +
             "                        \"YorickCommand class.";
 }
