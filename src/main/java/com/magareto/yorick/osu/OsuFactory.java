@@ -8,11 +8,11 @@ import com.magareto.yorick.osu.gatari.GatariStrategy;
 public class OsuFactory {
 
     public static Osu createOsu(OsuServer server) throws YorickException {
-        Osu osu = null;
+        Osu osu;
 
         switch (server) {
-            case BANCHO -> new BanchoStrategy();
-            case GATARI -> new GatariStrategy();
+            case BANCHO -> osu = new BanchoStrategy();
+            case GATARI -> osu = new GatariStrategy();
             default -> throw new YorickException(ErrorMessages.INVALID_OSU_SERVER);
         }
 

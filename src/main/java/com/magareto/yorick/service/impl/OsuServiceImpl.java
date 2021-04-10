@@ -3,6 +3,8 @@ package com.magareto.yorick.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magareto.yorick.bot.command.utils.CommandUtils;
+import com.magareto.yorick.bot.constants.ErrorMessages;
+import com.magareto.yorick.bot.constants.RedisConstants;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.db.redis.model.osu.DiscordData;
@@ -15,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,20 +48,26 @@ public class OsuServiceImpl implements OsuService {
 
         String[] split = StringUtils.split(link, "/");
 
-        if (split.length <= 1) {
+        if (split.length < 3) {
             return;
         }
 
         OsuServer server = OsuServer.getServerByName(split[1]);
 
-        if(server == null) {
+        if (server == null) {
             throw new YorickException("This is not a valid osu server or it is not yet implemented.");
         }
 
         String userId = split[3];
 
-        if(Globals.redisConnection.exists(userId)) {
-            throw new YorickException("The user is already being tracked.");
+        List<String> trackedUsers = Globals.redisConnection.lrange(RedisConstants.OSU_TRACK_LIST, 0, -1);
+
+        for (String userJson : trackedUsers) {
+            TrackedUser trackedUser = mapper.readValue(userJson, TrackedUser.class);
+
+            if (trackedUser.getServer() == server && trackedUser.getUserId().equals(userId)) {
+                throw new YorickException(ErrorMessages.OSU_USER_IS_TRACKED);
+            }
         }
 
         User user = message.getAuthor().get();
@@ -78,7 +87,7 @@ public class OsuServiceImpl implements OsuService {
         String data = mapper.writeValueAsString(trackedUser);
         logger.info("Data -> " + data);
 
-        Globals.redisConnection.set(userId, data);
+        Globals.redisConnection.rpush(RedisConstants.OSU_TRACK_LIST, data);
 
         CommandUtils.sendMessage(message.getChannel(), "User is being tracked now..");
 

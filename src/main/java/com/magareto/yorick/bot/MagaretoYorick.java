@@ -3,6 +3,7 @@ package com.magareto.yorick.bot;
 import com.google.inject.Guice;
 import com.magareto.yorick.bot.command.YorickCommandInitializer;
 import com.magareto.yorick.bot.constants.Constants;
+import com.magareto.yorick.bot.constants.RedisConstants;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.bot.injector.YorickInjectorConfig;
 import com.magareto.yorick.cron.CronInitializer;
@@ -35,7 +36,7 @@ public class MagaretoYorick {
             throw new RuntimeException(e);
         }
 
-        Globals.redisConnection = RedisInitalizer.createConnection(Constants.REDIS_HOSTNAME);
+        Globals.redisConnection = RedisInitalizer.createConnection(RedisConstants.HOSTNAME);
 
         final String BOT_TOKEN = System.getenv(Constants.BOT_TOKEN_ENV);
 
@@ -50,8 +51,8 @@ public class MagaretoYorick {
 
         EventDispatcher.dispatchEvents(client);
 
-//        CronInitializer.registerCronJobs(client, RedisInitalizer.createConnection(Constants.REDIS_HOSTNAME));
-//        RedisInitalizer.registerSubscribers(client);
+        CronInitializer.registerCronJobs(client, RedisInitalizer.createConnection(RedisConstants.HOSTNAME));
+        RedisInitalizer.registerSubscribers(client);
 
 
         client.onDisconnect().block();

@@ -19,6 +19,8 @@ public class ErrorMessages {
 
 
     public static final String INVALID_OSU_SERVER = "The server that is specified in this message seems to be invalid.";
+    public static final String OSU_USER_IS_TRACKED = "This user is already being tracked.";
+
     public static String COMMAND_CLASS_NOT_VALID = "There seems to be an annotated command, which does not implement the \" +\n" +
             "                        \"YorickCommand class.";
 }

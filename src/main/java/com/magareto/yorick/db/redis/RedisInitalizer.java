@@ -1,6 +1,7 @@
 package com.magareto.yorick.db.redis;
 
 import com.magareto.yorick.bot.constants.Constants;
+import com.magareto.yorick.bot.constants.RedisConstants;
 import com.magareto.yorick.db.redis.message.subscriber.OsuSubscriber;
 import com.magareto.yorick.db.redis.model.Channel;
 import discord4j.core.GatewayDiscordClient;
@@ -12,7 +13,7 @@ public class RedisInitalizer {
     }
 
     public static void registerSubscribers(GatewayDiscordClient client) {
-        Jedis connection = createConnection(Constants.REDIS_HOSTNAME);
+        Jedis connection = createConnection(RedisConstants.HOSTNAME);
 
 
         connection.subscribe(new OsuSubscriber(client), Channel.OSU.name());

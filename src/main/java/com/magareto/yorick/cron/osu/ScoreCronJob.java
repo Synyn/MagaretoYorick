@@ -38,7 +38,13 @@ public class ScoreCronJob extends TimerTask {
 
         for (String trackedUser : trackedOsuUsers) {
             try {
+
+                logger.info("Tracked User -> " + trackedUser);
+
                 TrackedUser user = mapper.readValue(trackedUser, TrackedUser.class);
+
+                logger.info("Server -> " + user.getServer());
+
                 Osu osu = OsuFactory.createOsu(user.getServer());
                 List<BaseScoreModel> recentScoresForUser = osu.getRecentScoresForUser(user.getUserId());
 
@@ -50,6 +56,10 @@ public class ScoreCronJob extends TimerTask {
     }
 
     private void handleScorePublish(TrackedUser user, List<BaseScoreModel> recentScoresForUser) throws JsonProcessingException {
+        if(recentScoresForUser == null || recentScoresForUser.isEmpty()) {
+            return;
+        }
+
         Calendar userLastScoreDate = user.getLastScoreDate();
 
         for (BaseScoreModel recentScore : recentScoresForUser) {
