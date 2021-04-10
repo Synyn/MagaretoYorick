@@ -6,9 +6,6 @@ import java.util.Calendar;
 import java.util.List;
 
 public class ScoreModel {
-
-    private String discordUserId;
-
     private String id;
     private OsuServer server;
 
@@ -23,6 +20,8 @@ public class ScoreModel {
     private String beatMapUrl;
     private String username;
     private String bpm;
+    private String starRating;
+    private String difficulty;
 
     public String getBpm() {
         return bpm;
@@ -126,5 +125,21 @@ public class ScoreModel {
 
     public void setServer(OsuServer server) {
         this.server = server;
+    }
+
+    public String getStarRating() {
+        return starRating;
+    }
+
+    public void setStarRating(String starRating) {
+        this.starRating = starRating;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
     }
 }

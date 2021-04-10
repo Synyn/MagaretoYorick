@@ -15,6 +15,7 @@ public class BanchoBeatmap {
     private Integer bpm;
     private Integer playcount;
     private String url;
+    private String version;
 
     public Double getDiff() {
         return diff;
@@ -78,5 +79,13 @@ public class BanchoBeatmap {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

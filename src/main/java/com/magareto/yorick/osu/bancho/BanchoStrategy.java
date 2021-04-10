@@ -76,6 +76,8 @@ public class BanchoStrategy implements Osu {
         model.setUsername(score.getUser().getUsername());
         model.setRank(score.getRank());
         model.setMaxCombo(score.getMaxCombo());
+        model.setDifficulty(score.getBeatmap().getVersion());
+        model.setStarRating(String.valueOf(score.getBeatmap().getDiff()));
         model.setServer(OsuServer.BANCHO);
 
         return model;
