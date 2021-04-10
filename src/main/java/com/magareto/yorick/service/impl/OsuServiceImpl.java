@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +61,7 @@ public class OsuServiceImpl implements OsuService {
 
         String userId = split[3];
 
-        List<String> trackedUsers = Globals.redisConnection.lrange(RedisConstants.OSU_TRACK_LIST, 0, -1);
+        Set<String> trackedUsers = Globals.redisConnection.smembers(RedisConstants.OSU_TRACK_LIST);
 
         for (String userJson : trackedUsers) {
             TrackedUser trackedUser = mapper.readValue(userJson, TrackedUser.class);
@@ -87,7 +88,7 @@ public class OsuServiceImpl implements OsuService {
         String data = mapper.writeValueAsString(trackedUser);
         logger.info("Data -> " + data);
 
-        Globals.redisConnection.rpush(RedisConstants.OSU_TRACK_LIST, data);
+        Globals.redisConnection.sadd(RedisConstants.OSU_TRACK_LIST, data);
 
         CommandUtils.sendMessage(message.getChannel(), "User is being tracked now..");
 

@@ -1,12 +1,12 @@
 package com.magareto.yorick.osu;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.Calendar;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class BaseScoreModel {
+public class BaseScoreModel {
     protected Calendar scoreDate;
+    private OsuServer server;
+
+    private String json;
 
     public Calendar getScoreDate() {
         return scoreDate;
@@ -14,5 +14,21 @@ public abstract class BaseScoreModel {
 
     public void setScoreDate(Calendar scoreDate) {
         this.scoreDate = scoreDate;
+    }
+
+    public OsuServer getServer() {
+        return server;
+    }
+
+    public void setServer(OsuServer server) {
+        this.server = server;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 }

@@ -8,8 +8,8 @@ import java.util.Calendar;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BanchoScore extends BaseScoreModel {
-    private Integer id;
+public class BanchoScore {
+    private Long id;
     @JsonProperty("user_id")
     private Integer userId;
     private List<String> mods;
@@ -24,11 +24,11 @@ public class BanchoScore extends BaseScoreModel {
     private BanchoBeatmap beatmap;
     private BanchoUser user;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -79,7 +79,6 @@ public class BanchoScore extends BaseScoreModel {
     public void setCreatedAt(Calendar createdAt) {
         this.createdAt = createdAt;
 
-        super.scoreDate = createdAt;
     }
 
     public Double getPp() {

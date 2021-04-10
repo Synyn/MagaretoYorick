@@ -15,7 +15,6 @@ public class RedisInitalizer {
     public static void registerSubscribers(GatewayDiscordClient client) {
         Jedis connection = createConnection(RedisConstants.HOSTNAME);
 
-
         connection.subscribe(new OsuSubscriber(client), Channel.OSU.name());
     }
 }

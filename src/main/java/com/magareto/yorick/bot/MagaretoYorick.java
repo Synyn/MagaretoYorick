@@ -51,7 +51,7 @@ public class MagaretoYorick {
 
         EventDispatcher.dispatchEvents(client);
 
-        CronInitializer.registerCronJobs(client, RedisInitalizer.createConnection(RedisConstants.HOSTNAME));
+        CronInitializer.registerCronJobs();
         RedisInitalizer.registerSubscribers(client);
 
 
