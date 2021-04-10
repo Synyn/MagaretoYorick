@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OsuScore extends BaseScoreModel {
+public class BanchoScore extends BaseScoreModel {
     private Integer id;
     @JsonProperty("user_id")
     private Integer userId;
@@ -21,8 +21,8 @@ public class OsuScore extends BaseScoreModel {
     private Calendar createdAt;
     private Double pp;
     private String mode;
-    private Beatmap beatmap;
-    private OsuUser user;
+    private BanchoBeatmap beatmap;
+    private BanchoUser user;
 
     public Integer getId() {
         return id;
@@ -98,19 +98,19 @@ public class OsuScore extends BaseScoreModel {
         this.mode = mode;
     }
 
-    public Beatmap getBeatmap() {
+    public BanchoBeatmap getBeatmap() {
         return beatmap;
     }
 
-    public void setBeatmap(Beatmap beatmap) {
-        this.beatmap = beatmap;
+    public void setBeatmap(BanchoBeatmap banchoBeatmap) {
+        this.beatmap = banchoBeatmap;
     }
 
-    public OsuUser getUser() {
+    public BanchoUser getUser() {
         return user;
     }
 
-    public void setUser(OsuUser user) {
+    public void setUser(BanchoUser user) {
         this.user = user;
     }
 }

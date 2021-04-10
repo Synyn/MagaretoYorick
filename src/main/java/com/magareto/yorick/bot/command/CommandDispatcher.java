@@ -40,6 +40,8 @@ public class CommandDispatcher {
 
             if (!formattedCommand.equals(Constants.HELP_COMMAND)) {
                 handleCommand(commandModel, message);
+            } else if (message.getContent().contains("https://osu.ppy.sh")) {
+                
             } else {
                 handleHelpCommand(commandModel, message);
             }

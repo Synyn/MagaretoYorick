@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OsuUser {
+public class BanchoUser {
     @JsonProperty("avatar_url")
     private String avatar;
     @JsonProperty("country_code")

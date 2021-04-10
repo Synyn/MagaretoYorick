@@ -8,8 +8,7 @@ import com.magareto.yorick.db.redis.model.osu.TrackedUser;
 import com.magareto.yorick.osu.BaseScoreModel;
 import com.magareto.yorick.osu.Osu;
 import com.magareto.yorick.osu.OsuFactory;
-import com.magareto.yorick.osu.OsuServer;
-import com.magareto.yorick.osu.bancho.model.OsuScore;
+import org.apache.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
 import java.util.Calendar;
@@ -22,6 +21,8 @@ public class ScoreCronJob extends TimerTask {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    Logger logger = Logger.getLogger(ScoreCronJob.class);
+
     public ScoreCronJob(Jedis connection) {
         this.connection = connection;
     }
@@ -30,6 +31,7 @@ public class ScoreCronJob extends TimerTask {
     public void run() {
         List<String> trackedOsuUsers = connection.lrange("trackedOsuUsers", 0, -1);
 
+        logger.info("Cron job found users -> " + trackedOsuUsers);
         if (trackedOsuUsers == null || trackedOsuUsers.isEmpty()) {
             return;
         }

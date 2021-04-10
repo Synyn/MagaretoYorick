@@ -6,9 +6,6 @@ import com.magareto.yorick.db.redis.model.Channel;
 import discord4j.core.GatewayDiscordClient;
 import redis.clients.jedis.Jedis;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-
 public class RedisInitalizer {
     public static Jedis createConnection(String hostname) {
         return new Jedis(hostname);
