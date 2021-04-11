@@ -12,8 +12,12 @@ import com.magareto.yorick.db.redis.model.settings.GuildSettings;
 import com.magareto.yorick.db.redis.model.settings.OsuTrackingSettings;
 import com.magareto.yorick.service.SettingsService;
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 
+import java.util.Iterator;
 import java.util.List;
 
 @Command(name = "osu", description = "Configure osu settings for this server.")
@@ -34,6 +38,20 @@ public class OsuCommand implements YorickCommand {
 
         Snowflake guildId = message.getGuildId().get();
         if (flag.equals(trackingCommand)) {
+
+            //TODO: Check if author has admin priveleges.
+
+            Member block = message.getAuthor().get().asMember(guildId).block();
+            PermissionSet permissions = block.getBasePermissions().block();
+            Iterator<Permission> iterator = permissions.stream().iterator();
+
+            while (iterator.hasNext()) {
+                Permission permission = iterator.next();
+                if(permission != Permission.ADMINISTRATOR) {
+                    continue;
+                }
+            }
+
             boolean tracking = toggleTracking(guildId);
             CommandUtils.sendMessage(message.getChannel(), "Tracking has been toggled, currently server is being `" +
                     (tracking ? "tracked" : "untracked") + "`.");

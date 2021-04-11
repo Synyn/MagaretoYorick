@@ -6,7 +6,9 @@ import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.Globals;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
@@ -14,6 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class CommandUtils {
 
@@ -49,7 +52,7 @@ public class CommandUtils {
     public static void sendErrorMessage(Mono<MessageChannel> channel, Exception e) {
         String errorMessage = e.getMessage();
 
-        if(!(e instanceof YorickException)) {
+        if (!(e instanceof YorickException)) {
             errorMessage = ErrorMessages.COMMAND_NOT_EXECUTABLE;
         }
 
@@ -100,5 +103,4 @@ public class CommandUtils {
 
         return commandModel;
     }
-
 }
