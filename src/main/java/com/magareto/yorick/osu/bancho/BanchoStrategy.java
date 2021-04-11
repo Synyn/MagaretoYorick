@@ -86,6 +86,7 @@ public class BanchoStrategy implements Osu {
         model.setStarRating(String.valueOf(score.getBeatmap().getDiff()));
         model.setMissCount(String.valueOf(score.getStatistics().get("count_miss")));
         model.setServer(OsuServer.BANCHO);
+        model.setBeatMapArtist(score.getBeatmapSet().getArtist());
 
         return model;
     }

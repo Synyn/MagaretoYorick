@@ -6,6 +6,7 @@ import com.magareto.yorick.bot.constants.RedisConstants;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.db.redis.model.Channel;
 import com.magareto.yorick.db.redis.model.osu.TrackedUser;
+import com.magareto.yorick.db.redis.model.settings.GuildData;
 import com.magareto.yorick.osu.BaseScoreModel;
 import com.magareto.yorick.osu.Osu;
 import com.magareto.yorick.osu.OsuFactory;
@@ -46,6 +47,10 @@ public class ScoreCronJob extends TimerTask {
                 TrackedUser user = mapper.readValue(trackedUser, TrackedUser.class);
 
                 logger.info("Server -> " + user.getServer());
+                List<GuildData> guildList = user.getDiscordData().getGuildList();
+                if(guildList == null || guildList.isEmpty()) {
+                    continue;
+                }
 
                 Osu osu = OsuFactory.createOsu(user.getServer());
                 List<ScoreModel> recentScoresForUser = osu.getRecentScoresForUser(user.getUserId());

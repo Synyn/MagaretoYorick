@@ -13,7 +13,9 @@ import com.magareto.yorick.osu.model.ScoreModel;
 import com.magareto.yorick.service.SettingsService;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -99,7 +101,7 @@ public class OsuSubscriber extends JedisPubSub {
                     trackingChannel = guild.getChannelId();
                 }
 
-                sendScoreNotification(guild, currentUser.getDiscordData().getUserId(), scoreModel, client);
+                sendScoreNotification(guild.getGuildId(), trackingChannel, currentUser.getDiscordData().getUserId(), scoreModel, client);
 
             }
 
@@ -109,11 +111,11 @@ public class OsuSubscriber extends JedisPubSub {
         }
     }
 
-    private void sendScoreNotification(GuildData guildData, String discordUserId, ScoreModel scoreModel, GatewayDiscordClient client) {
+    private void sendScoreNotification(String guildId, String channelId, String discordUserId, ScoreModel scoreModel, GatewayDiscordClient client) {
 
-        String channelId = guildData.getChannelId();
+        Guild guildById = client.getGuildById(Snowflake.of(guildId)).block();
+        GuildChannel channel = guildById.getChannelById(Snowflake.of(channelId)).block();
 
-        discord4j.core.object.entity.channel.Channel channel = client.getChannelById(Snowflake.of(channelId)).block();
         User discordUser = client.getUserById(Snowflake.of(discordUserId)).block();
         MessageChannel messageChannel = (MessageChannel) channel;
 
@@ -132,18 +134,18 @@ public class OsuSubscriber extends JedisPubSub {
             case BANCHO -> userLink = "https://osu.ppy.sh/users/";
         }
 
+        String title = scoreModel.getBeatMapName() + " - " + scoreModel.getBeatMapName() + "[" + scoreModel.getDifficulty() + "]";
 
         String finalUserLink = userLink;
         messageChannel.createEmbed(embedCreateSpec -> embedCreateSpec
-                .setTitle(scoreModel.getBeatMapName())
+                .setTitle(title)
                 .setUrl(scoreModel.getBeatMapUrl())
-                .addField("Accuracy ", scoreModel.getAccuracy(), false)
-                .addField("Difficulty ", scoreModel.getDifficulty(), true)
-                .addField("BPM ", scoreModel.getBpm(), true)
-                .addField("Mods ", scoreModel.getMods().isEmpty() ? "None" : mods.toString(), true)
+                .addField("Accuracy ", scoreModel.getAccuracy() + "%", false)
                 .addField("Stars ", scoreModel.getStarRating(), true)
-                .addField("PP ", scoreModel.getPp(), true)
+                .addField("BPM ", scoreModel.getBpm(), true)
                 .addField("Rank ", scoreModel.getRank(), true)
+                .addField("Mods ", scoreModel.getMods().isEmpty() ? "None" : mods.toString(), true)
+                .addField("PP ", scoreModel.getPp(), true)
                 .addField("Score ", String.valueOf(scoreModel.getScore()), true)
                 .addField("Combo", String.valueOf(scoreModel.getMaxCombo()), true)
                 .addField("Miss count", scoreModel.getMissCount(), true)
