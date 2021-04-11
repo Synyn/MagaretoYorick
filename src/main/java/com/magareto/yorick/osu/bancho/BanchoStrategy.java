@@ -1,26 +1,43 @@
 package com.magareto.yorick.osu.bancho;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.magareto.yorick.bot.constants.RedisConstants;
+import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.osu.BaseScoreModel;
 import com.magareto.yorick.osu.Osu;
 import com.magareto.yorick.osu.OsuServer;
 import com.magareto.yorick.osu.bancho.model.BanchoScore;
 import com.magareto.yorick.osu.model.ScoreModel;
 import org.apache.http.HttpHeaders;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BanchoStrategy implements Osu {
 
-    String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI2NDM0IiwianRpIjoiMjkwMjFjZjM2MzdhNGVlM2RlZWIwZDQ4MGNkZDg2OGQwM2RjZjMwOTRkNzE3NGUyNDJlZWMxZjE2YmM4ZWZlMzFhMjAxZTAyMWI0NjUxZGMiLCJpYXQiOjE2MTgwNzMxODksIm5iZiI6MTYxODA3MzE4OSwiZXhwIjoxNjE4MTU5NTg5LCJzdWIiOiIiLCJzY29wZXMiOlsicHVibGljIl19.VPficVB9L41MiV-mU7dBM39Uwoe8TorS4RljEwgqMMJWFAP2v-BoIyBH5UePm5N6Jv-yETqCuggCZEIqiIpDp_TD-w1lNKhvnNxUExT884FoHq_r2DQ_infNPVg1jYjkmKjiwqRVWMl0mxM_1OY01Ffm3U-oQE4n--Ln-LxGIwZfLASs5lR93vdzq8lUbFKmHm9LyaCkX-Yfav1tYgZ8_pPpe_kPb6YmIpTOcOoeREL9ARPM6RlKGOkt7d7E8HFpvo5GYDvgYLeKgtjH_kFLo6UDmX5BZAuuSXnEsv2eNiOUkYKMbS_5yU8HV_0_hkLlXPjd4MBavxE8L1wIwgGYMEyiG-e-_-luvPMWY3Ht5UlgNSk6_5Zm6JPKxRSwK8lI9wZNfZZCBigHDaITUpgtQAc_GTv6gDOSrViayMWkttOlaT735FliZuaRJxrRbVQt1kV4f2Djrm5OCiKiqBzjPltHCxbCz_kqxtcizy4lSABH--WQAh99aA3TuqbR8iyj-Y0LVx2An9JohSGU5S6HniI5su59gOBuTxTgo68CcccvY4162uCHf8OdL84-OuG07SbWUyKlkRJlf2vnfKqwLW96gBzmpZ30D6tofuswE0sY942e0f7DnmBp5MERN7Ntv-u0ZCFX8P4lC_RPg8nFq5RQxI0Psb1FHg9UpD3SlN4\n";
+    private static final String BANCHO_CLIENT_ID = "BANCHO_CLIENT_ID";
+    private static final String BANCHO_CLIENT_SECRET = "BANCHO_CLIENT_SECRET";
+
+    private static final String TOKEN_GENERATION_URL = "https://osu.ppy.sh/oauth/token";
+    private static final int STATUS_UNAUTHORIZED = 401;
+    private String URL = "https://osu.ppy.sh/api/v2/users/%s/scores/recent?include_fails=0&limit=5";
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -29,32 +46,37 @@ public class BanchoStrategy implements Osu {
     Logger logger = Logger.getLogger(BanchoStrategy.class);
 
     @Override
-    public List<ScoreModel> getRecentScoresForUser(String userId) {
-        HttpGet get = new HttpGet(String.format("https://osu.ppy.sh/api/v2/users/%s/scores/recent?include_fails=0&limit=5", userId));
-        get.setHeader(HttpHeaders.AUTHORIZATION, header);
+    public List<ScoreModel> getRecentScoresForUser(String userId) throws IOException {
 
-        CloseableHttpClient aDefault = HttpClients.createDefault();
+        String token = Globals.redisConnection.get(RedisConstants.BANCHO_ACCESS_TOKEN_KEY);
+        if (token == null) {
+            token = generateNewToken();
+            Globals.redisConnection.set(RedisConstants.BANCHO_ACCESS_TOKEN_KEY, token);
+        }
 
         try {
-            CloseableHttpResponse execute = aDefault.execute(get);
+            CloseableHttpResponse response = sendRequest(userId, token);
+            if (response.getStatusLine().getStatusCode() == STATUS_UNAUTHORIZED) {
+                token = generateNewToken();
 
-            int statusCode = execute.getStatusLine().getStatusCode();
-            logger.info("Status -> " + statusCode);
+                Globals.redisConnection.set(RedisConstants.BANCHO_ACCESS_TOKEN_KEY, token);
 
-            String response = new String(execute.getEntity().getContent().readAllBytes());
-            logger.info("Bancho response -> " + response);
-
-            BanchoScore[] banchoScores = mapper.readValue(response, BanchoScore[].class);
-
-            ArrayList<ScoreModel> scoreModels = new ArrayList<>();
-
-            for (BanchoScore score : banchoScores) {
-                ScoreModel model = createScoreModelFromBanchoScore(score);
-                scoreModels.add(model);
+                response = sendRequest(userId, token);
             }
 
-            return scoreModels;
+            logger.info(response.getEntity().getContent().toString());
 
+            String json = new String(response.getEntity().getContent().readAllBytes());
+            BanchoScore[] scores = mapper.readValue(json, BanchoScore[].class);
+
+            List<ScoreModel> scoreModels = new ArrayList<>();
+            for (BanchoScore score : scores) {
+                scoreModels.add(createScoreModelFromBanchoScore(score));
+            }
+
+            response.close();
+
+            return scoreModels;
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,6 +84,44 @@ public class BanchoStrategy implements Osu {
 
 
         return null;
+    }
+
+    private CloseableHttpResponse sendRequest(String userId, String token) throws IOException {
+        HttpGet get = new HttpGet(String.format(URL, userId));
+        get.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+
+        CloseableHttpClient client = HttpClients.createDefault();
+
+        return client.execute(get);
+
+    }
+
+    private String generateNewToken() throws IOException {
+        HttpPost httpPost = new HttpPost(TOKEN_GENERATION_URL);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("client_id", System.getenv(BANCHO_CLIENT_ID));
+        params.put("client_secret", System.getenv(BANCHO_CLIENT_SECRET));
+        params.put("grant_type", "client_credentials");
+        params.put("scope", "public");
+
+        StringEntity entity = new StringEntity(mapper.writeValueAsString(params));
+        httpPost.setEntity(entity);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-type", "application/json");
+
+        CloseableHttpClient client = HttpClients.createDefault();
+
+        CloseableHttpResponse response = client.execute(httpPost);
+
+        InputStream content = response.getEntity().getContent();
+        String json = new String(content.readAllBytes());
+
+        JsonNode jsonNode = mapper.readTree(json);
+        client.close();
+
+        return jsonNode.get("access_token").asText();
+
     }
 
     private ScoreModel createScoreModelFromBanchoScore(BanchoScore score) {

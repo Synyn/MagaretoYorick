@@ -14,6 +14,7 @@ import com.magareto.yorick.osu.model.ScoreModel;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.Jedis;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +58,8 @@ public class ScoreCronJob extends TimerTask {
 
                 handleScorePublish(user, recentScoresForUser);
             } catch (JsonProcessingException | YorickException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
