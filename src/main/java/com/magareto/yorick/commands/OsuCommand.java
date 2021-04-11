@@ -35,8 +35,8 @@ public class OsuCommand implements YorickCommand {
         Snowflake guildId = message.getGuildId().get();
         if (flag.equals(trackingCommand)) {
             boolean tracking = toggleTracking(guildId);
-            CommandUtils.sendMessage(message.getChannel(), "Tracking has been toggled, currently server is being" +
-                    (tracking ? "tracked" : "untracked") + ".");
+            CommandUtils.sendMessage(message.getChannel(), "Tracking has been toggled, currently server is being `" +
+                    (tracking ? "tracked" : "untracked") + "`.");
         } else if (flag.equals(changeTrackingChannelCommand)) {
             changeDefaultTrackingChannel(guildId, message.getChannelId());
             CommandUtils.sendMessage(message.getChannel(), "The channel has been updated. This is the new place where the osu scores will be for now on...");

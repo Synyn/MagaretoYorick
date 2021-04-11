@@ -99,7 +99,7 @@ public class OsuSubscriber extends JedisPubSub {
                     trackingChannel = guild.getChannelId();
                 }
 
-                sendScoreNotification(guild, currentUser.getUserId(), scoreModel, client);
+                sendScoreNotification(guild, currentUser.getDiscordData().getUserId(), scoreModel, client);
 
             }
 
