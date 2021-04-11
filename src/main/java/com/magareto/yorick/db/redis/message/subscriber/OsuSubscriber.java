@@ -134,7 +134,7 @@ public class OsuSubscriber extends JedisPubSub {
             case BANCHO -> userLink = "https://osu.ppy.sh/users/";
         }
 
-        String title = scoreModel.getBeatMapName() + " - " + scoreModel.getBeatMapName() + "[" + scoreModel.getDifficulty() + "]";
+        String title = scoreModel.getBeatMapArtist() + " - " + scoreModel.getBeatMapName() + "[" + scoreModel.getDifficulty() + "]";
 
         String finalUserLink = userLink;
         messageChannel.createEmbed(embedCreateSpec -> embedCreateSpec
