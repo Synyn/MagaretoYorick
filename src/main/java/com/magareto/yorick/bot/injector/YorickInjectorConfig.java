@@ -14,5 +14,6 @@ public class YorickInjectorConfig extends AbstractModule {
         bind(WaifuService.class).to(WaifuServiceImpl.class);
         bind(MemeService.class).to(MemeServiceImpl.class);
         bind(OsuService.class).to(OsuServiceImpl.class);
+        bind(SettingsService.class).to(SettingsServiceImpl.class);
     }
 }

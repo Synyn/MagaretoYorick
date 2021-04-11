@@ -7,6 +7,7 @@ import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.service.CommandService;
 import com.magareto.yorick.service.HelpService;
 import com.magareto.yorick.service.OsuService;
+import com.magareto.yorick.service.SettingsService;
 import discord4j.core.object.entity.Message;
 import org.apache.log4j.Logger;
 
@@ -21,7 +22,6 @@ public class CommandDispatcher {
     private static OsuService osuService = Globals.injector.getInstance(OsuService.class);
 
     public static void dispatch(Message message) {
-
         String formattedCommand = CommandUtils.formatCommand(message.getContent());
 
         try {
@@ -30,8 +30,10 @@ public class CommandDispatcher {
              * This means that this was not actually a command, but just a message
              */
             if (formattedCommand == null) {
-//                OsuService osuService = Globals.injector.getInstance(OsuService.class);
+
                 osuService.trackNewUser(message);
+
+
                 return;
             }
 

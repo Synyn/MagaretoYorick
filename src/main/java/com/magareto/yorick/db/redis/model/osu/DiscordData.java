@@ -1,9 +1,12 @@
 package com.magareto.yorick.db.redis.model.osu;
 
+import com.magareto.yorick.db.redis.model.settings.GuildData;
+
+import java.util.List;
+
 public class DiscordData {
     private String userId;
-    private String guildId;
-    private String channelId;
+    private List<GuildData> guildList;
 
     public String getUserId() {
         return userId;
@@ -13,19 +16,12 @@ public class DiscordData {
         this.userId = userId;
     }
 
-    public String getGuildId() {
-        return guildId;
+
+    public List<GuildData> getGuildList() {
+        return guildList;
     }
 
-    public void setGuildId(String guildId) {
-        this.guildId = guildId;
-    }
-
-    public String getChannelId() {
-        return channelId;
-    }
-
-    public void setChannelId(String channelId) {
-        this.channelId = channelId;
+    public void setGuildList(List<GuildData> guildId) {
+        this.guildList = guildId;
     }
 }

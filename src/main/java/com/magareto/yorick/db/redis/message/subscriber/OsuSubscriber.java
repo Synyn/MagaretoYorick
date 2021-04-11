@@ -7,11 +7,15 @@ import com.magareto.yorick.bot.constants.RedisConstants;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.db.redis.model.Channel;
 import com.magareto.yorick.db.redis.model.osu.TrackedUser;
+import com.magareto.yorick.db.redis.model.settings.GuildData;
+import com.magareto.yorick.db.redis.model.settings.GuildSettings;
 import com.magareto.yorick.osu.model.ScoreModel;
+import com.magareto.yorick.service.SettingsService;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 import redis.clients.jedis.JedisPubSub;
@@ -25,6 +29,9 @@ public class OsuSubscriber extends JedisPubSub {
     ObjectMapper mapper = new ObjectMapper();
 
     Logger logger = Logger.getLogger(OsuSubscriber.class);
+
+    SettingsService settingsService = Globals.injector.getInstance(SettingsService.class);
+
 
     public OsuSubscriber(GatewayDiscordClient client) {
         this.client = client;
@@ -50,6 +57,9 @@ public class OsuSubscriber extends JedisPubSub {
     private void handleOsuScore(GatewayDiscordClient client, String message) {
 
         logger.info("Inside handle osu score " + message);
+        /**
+         * Check if tracking is enabled. If not enabled, then we do not do anything.
+         */
 
         try {
             ScoreModel scoreModel = mapper.readValue(message, ScoreModel.class);
@@ -68,57 +78,82 @@ public class OsuSubscriber extends JedisPubSub {
                 }
             }
 
-            String userLink = null;
 
-            switch (scoreModel.getServer()) {
-                case BANCHO -> userLink = "https://osu.ppy.sh/users/";
+            List<GuildData> guilds = currentUser.getDiscordData().getGuildList();
+
+            GuildData contextGuild = null;
+
+            for (GuildData guild : guilds) {
+                GuildSettings settings = settingsService.get(Snowflake.of(guild.getGuildId()));
+                if (settings == null) {
+                    continue;
+                }
+
+                if (!settings.getOsuTrackingSettings().isTracking()) {
+                    continue;
+                }
+
+                String trackingChannel = settings.getOsuTrackingSettings().getDefaultTrackingChannel();
+
+                if (StringUtils.isEmpty(trackingChannel)) {
+                    trackingChannel = guild.getChannelId();
+                }
+
+                sendScoreNotification(guild, currentUser.getUserId(), scoreModel, client);
+
             }
-
-            String guildId = currentUser.getDiscordData().getGuildId();
-            String channelId = currentUser.getDiscordData().getChannelId();
-            discord4j.core.object.entity.channel.Channel channel = client.getChannelById(Snowflake.of(channelId)).block();
-
-            User discordUser = client.getUserById(Snowflake.of(currentUser.getDiscordData().getUserId())).block();
-
-            MessageChannel messageChannel = (MessageChannel) channel;
-
-
-            String finalUserLink = userLink;
-            logger.info("Message channel -> " + messageChannel.getId().asString());
-            logger.info("beatmap name -> " + scoreModel.getBeatMapName());
-
-            StringBuilder mods = new StringBuilder();
-
-            if(!scoreModel.getMods().isEmpty()) {
-                scoreModel.getMods().forEach(mods::append);
-            }
-
-
-            messageChannel.createEmbed(embedCreateSpec -> embedCreateSpec
-                    .setTitle(scoreModel.getBeatMapName())
-                    .setUrl(scoreModel.getBeatMapUrl())
-                    .addField("Accuracy ", scoreModel.getAccuracy(), false)
-                    .addField("Difficulty ", scoreModel.getDifficulty(), true)
-                    .addField("BPM ", scoreModel.getBpm(), true)
-                    .addField("Mods ", scoreModel.getMods().isEmpty() ? "None" : mods.toString(), true)
-                    .addField("Stars ", scoreModel.getStarRating(), true)
-                    .addField("PP ", scoreModel.getPp(), true)
-                    .addField("Rank ", scoreModel.getRank(), true)
-                    .addField("Score ", String.valueOf(scoreModel.getScore()), true)
-                    .addField("Combo", String.valueOf(scoreModel.getMaxCombo()), true)
-                    .addField("Miss count", scoreModel.getMissCount(), true)
-                    .addField("Mode ", scoreModel.getGameMode(), true)
-
-                    .setAuthor(scoreModel.getUsername(), finalUserLink + scoreModel.getUserId(), scoreModel.getUserAvatarUrl().contains("https://a.ppy.sh") ? scoreModel.getUserAvatarUrl() : "https://osu.ppy.sh" + scoreModel.getUserAvatarUrl())
-
-                    .setFooter(discordUser.getUsername() + " just landed a new score !", discordUser.getAvatarUrl())
-
-            ).subscribe();
 
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendScoreNotification(GuildData guildData, String discordUserId, ScoreModel scoreModel, GatewayDiscordClient client) {
+
+        String channelId = guildData.getChannelId();
+
+        discord4j.core.object.entity.channel.Channel channel = client.getChannelById(Snowflake.of(channelId)).block();
+        User discordUser = client.getUserById(Snowflake.of(discordUserId)).block();
+        MessageChannel messageChannel = (MessageChannel) channel;
+
+        logger.info("Message channel -> " + messageChannel.getId().asString());
+        logger.info("beatmap name -> " + scoreModel.getBeatMapName());
+
+        StringBuilder mods = new StringBuilder();
+
+        if (!scoreModel.getMods().isEmpty()) {
+            scoreModel.getMods().forEach(mods::append);
+        }
+
+        String userLink = null;
+
+        switch (scoreModel.getServer()) {
+            case BANCHO -> userLink = "https://osu.ppy.sh/users/";
+        }
+
+
+        String finalUserLink = userLink;
+        messageChannel.createEmbed(embedCreateSpec -> embedCreateSpec
+                .setTitle(scoreModel.getBeatMapName())
+                .setUrl(scoreModel.getBeatMapUrl())
+                .addField("Accuracy ", scoreModel.getAccuracy(), false)
+                .addField("Difficulty ", scoreModel.getDifficulty(), true)
+                .addField("BPM ", scoreModel.getBpm(), true)
+                .addField("Mods ", scoreModel.getMods().isEmpty() ? "None" : mods.toString(), true)
+                .addField("Stars ", scoreModel.getStarRating(), true)
+                .addField("PP ", scoreModel.getPp(), true)
+                .addField("Rank ", scoreModel.getRank(), true)
+                .addField("Score ", String.valueOf(scoreModel.getScore()), true)
+                .addField("Combo", String.valueOf(scoreModel.getMaxCombo()), true)
+                .addField("Miss count", scoreModel.getMissCount(), true)
+                .addField("Mode ", scoreModel.getGameMode(), true)
+
+                .setAuthor(scoreModel.getUsername(), finalUserLink + scoreModel.getUserId(), scoreModel.getUserAvatarUrl().contains("https://a.ppy.sh") ? scoreModel.getUserAvatarUrl() : "https://osu.ppy.sh" + scoreModel.getUserAvatarUrl())
+
+                .setFooter(discordUser.getUsername() + " just landed a new score !", discordUser.getAvatarUrl())
+
+        ).subscribe();
     }
 
     @Override
