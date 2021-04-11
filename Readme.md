@@ -9,7 +9,7 @@ MagaretoYorick is a general purpose discord bot written in java, using the [D4J 
 - Error handling system. All the errors are handled properly, and the bot responds accordingly. If an exception occurs that is not catched, the bot will handle it and give output to the user.
 - IOC Container. It uses google's guice IOC container. Maybe in the future I will write a custom one.
 - Using Redis as a database.
-- Tracking osu scores.
+- Tracking Osu! scores.
 
 ### How to run
 
