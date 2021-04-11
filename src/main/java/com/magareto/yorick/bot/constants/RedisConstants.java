@@ -4,13 +4,13 @@ public class RedisConstants {
     /**
      * FOR DEV
      */
-    public static final String HOSTNAME = "localhost";
+//    public static final String HOSTNAME = "localhost";
 
 
     /**
      * FOR PRODUCTION
      */
-//    public static final String HOSTNAME = "redis";
+    public static final String HOSTNAME = "redis";
 
 
 
