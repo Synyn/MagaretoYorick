@@ -4,7 +4,7 @@ public class RedisConstants {
     /**
      * FOR DEV
      */
-    public static final String HOSTNAME = "localhost";
+//    public static final String HOSTNAME = "localhost";
 
 
     public static final String OSU_TRACK_LIST = "trackedOsuUsers";
@@ -13,6 +13,6 @@ public class RedisConstants {
     /**
      * FOR PRODUCTION
      */
-//    public static final String HOSTNAME = "redis";
+    public static final String HOSTNAME = "redis";
 
 }
