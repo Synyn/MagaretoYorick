@@ -6,8 +6,6 @@ import com.magareto.yorick.bot.command.annotations.Command;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.MusicGlobals;
 import com.magareto.yorick.bot.music.MusicPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Guild;

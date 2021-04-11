@@ -1,0 +1,11 @@
+services:
+  yorick:
+    image: yorick
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - BANCHO_CLIENT_ID=${BANCHO_CLIENT_ID}
+      - BANCHO_CLIENT_SECRET=${BANCHO_CLIENT_SECRET}
+    links:
+      - "redis:redis"
+  redis:
+    image: redis
