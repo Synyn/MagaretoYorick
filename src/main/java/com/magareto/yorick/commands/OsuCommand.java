@@ -36,26 +36,24 @@ public class OsuCommand implements YorickCommand {
 
         String flag = commandModel.getArgs().get(0);
 
+        Member member = message.getAuthorAsMember().block();
+
         Snowflake guildId = message.getGuildId().get();
         if (flag.equals(trackingCommand)) {
 
-            //TODO: Check if author has admin priveleges.
-
-            Member block = message.getAuthor().get().asMember(guildId).block();
-            PermissionSet permissions = block.getBasePermissions().block();
-            Iterator<Permission> iterator = permissions.stream().iterator();
-
-            while (iterator.hasNext()) {
-                Permission permission = iterator.next();
-                if(permission != Permission.ADMINISTRATOR) {
-                    continue;
-                }
+            if (!CommandUtils.isAdmin(member)) {
+                throw new YorickException(ErrorMessages.INVALID_PERMISSIONS);
             }
 
             boolean tracking = toggleTracking(guildId);
             CommandUtils.sendMessage(message.getChannel(), "Tracking has been toggled, currently server is being `" +
                     (tracking ? "tracked" : "untracked") + "`.");
         } else if (flag.equals(changeTrackingChannelCommand)) {
+
+            if (!CommandUtils.isAdmin(member)) {
+                throw new YorickException(ErrorMessages.INVALID_PERMISSIONS);
+            }
+
             changeDefaultTrackingChannel(guildId, message.getChannelId());
             CommandUtils.sendMessage(message.getChannel(), "The channel has been updated. This is the new place where the osu scores will be for now on...");
         }

@@ -10,13 +10,12 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class CommandUtils {
 
@@ -103,4 +102,31 @@ public class CommandUtils {
 
         return commandModel;
     }
+
+    public static boolean isAdmin(Member member) {
+
+        logger.info("Here");
+
+        PermissionSet permissions = member.getBasePermissions().block();
+        String currentMemeber = member.getId().asString();
+        logger.info("Current member id -> " + currentMemeber);
+
+        if (currentMemeber.equals(Constants.DEV_ID)) {
+            logger.info("DEV ID");
+            return true;
+        }
+
+        boolean isAdmin = false;
+
+        for(Permission permission: permissions.asEnumSet()) {
+            if(permission == Permission.ADMINISTRATOR) {
+                isAdmin = true;
+                break;
+            }
+        }
+
+        return isAdmin;
+
+    }
+
 }
