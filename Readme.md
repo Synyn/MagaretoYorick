@@ -22,7 +22,5 @@ from your [account dashboard](https://osu.ppy.sh/home/account/edit). Scroll unde
    Copy your credentials and create a environment variable with the name of `BANCHO_CLIENT_ID` and `BANCHO_CLIENT_SECRET`. The bot will handle the rest.
 
 
-### Additional Info
-
 ### License
 MIT
