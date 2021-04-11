@@ -87,11 +87,20 @@ public class OsuSubscriber extends JedisPubSub {
             logger.info("Message channel -> " + messageChannel.getId().asString());
             logger.info("beatmap name -> " + scoreModel.getBeatMapName());
 
+            StringBuilder mods = new StringBuilder();
+
+            if(!scoreModel.getMods().isEmpty()) {
+                scoreModel.getMods().forEach(mods::append);
+            }
+
+
             messageChannel.createEmbed(embedCreateSpec -> embedCreateSpec
                     .setTitle(scoreModel.getBeatMapName())
                     .setUrl(scoreModel.getBeatMapUrl())
+                    .addField("Accuracy ", scoreModel.getAccuracy(), false)
                     .addField("Difficulty ", scoreModel.getDifficulty(), true)
                     .addField("BPM ", scoreModel.getBpm(), true)
+                    .addField("Mods ", scoreModel.getMods().isEmpty() ? "None" : mods.toString(), true)
                     .addField("Stars ", scoreModel.getStarRating(), true)
                     .addField("PP ", scoreModel.getPp(), true)
                     .addField("Rank ", scoreModel.getRank(), true)
