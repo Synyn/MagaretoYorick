@@ -25,6 +25,7 @@ public class ScoreModel {
     private String beatMapName;
     private String userAvatarUrl;
     private String missCount;
+    private String accuracy;
 
     public String getMissCount() {
         return missCount;
@@ -168,5 +169,13 @@ public class ScoreModel {
 
     public String getUserAvatarUrl() {
         return userAvatarUrl;
+    }
+
+    public String getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(String accuracy) {
+        this.accuracy = accuracy;
     }
 }

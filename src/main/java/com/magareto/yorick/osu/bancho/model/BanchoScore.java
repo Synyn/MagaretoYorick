@@ -10,6 +10,7 @@ import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BanchoScore {
+    private Double accuracy;
     private Long id;
     @JsonProperty("user_id")
     private Integer userId;
@@ -27,6 +28,14 @@ public class BanchoScore {
     private BeatmapSet beatmapSet;
     private BanchoUser user;
     private Map<String, Integer> statistics;
+
+    public Double getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(Double accuracy) {
+        this.accuracy = accuracy;
+    }
 
     public Long getId() {
         return id;

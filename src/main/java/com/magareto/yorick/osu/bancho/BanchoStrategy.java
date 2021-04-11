@@ -14,6 +14,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class BanchoStrategy implements Osu {
     String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI2NDM0IiwianRpIjoiMjkwMjFjZjM2MzdhNGVlM2RlZWIwZDQ4MGNkZDg2OGQwM2RjZjMwOTRkNzE3NGUyNDJlZWMxZjE2YmM4ZWZlMzFhMjAxZTAyMWI0NjUxZGMiLCJpYXQiOjE2MTgwNzMxODksIm5iZiI6MTYxODA3MzE4OSwiZXhwIjoxNjE4MTU5NTg5LCJzdWIiOiIiLCJzY29wZXMiOlsicHVibGljIl19.VPficVB9L41MiV-mU7dBM39Uwoe8TorS4RljEwgqMMJWFAP2v-BoIyBH5UePm5N6Jv-yETqCuggCZEIqiIpDp_TD-w1lNKhvnNxUExT884FoHq_r2DQ_infNPVg1jYjkmKjiwqRVWMl0mxM_1OY01Ffm3U-oQE4n--Ln-LxGIwZfLASs5lR93vdzq8lUbFKmHm9LyaCkX-Yfav1tYgZ8_pPpe_kPb6YmIpTOcOoeREL9ARPM6RlKGOkt7d7E8HFpvo5GYDvgYLeKgtjH_kFLo6UDmX5BZAuuSXnEsv2eNiOUkYKMbS_5yU8HV_0_hkLlXPjd4MBavxE8L1wIwgGYMEyiG-e-_-luvPMWY3Ht5UlgNSk6_5Zm6JPKxRSwK8lI9wZNfZZCBigHDaITUpgtQAc_GTv6gDOSrViayMWkttOlaT735FliZuaRJxrRbVQt1kV4f2Djrm5OCiKiqBzjPltHCxbCz_kqxtcizy4lSABH--WQAh99aA3TuqbR8iyj-Y0LVx2An9JohSGU5S6HniI5su59gOBuTxTgo68CcccvY4162uCHf8OdL84-OuG07SbWUyKlkRJlf2vnfKqwLW96gBzmpZ30D6tofuswE0sY942e0f7DnmBp5MERN7Ntv-u0ZCFX8P4lC_RPg8nFq5RQxI0Psb1FHg9UpD3SlN4\n";
 
     private ObjectMapper mapper = new ObjectMapper();
+
+    DecimalFormat df = new DecimalFormat("##.00");
 
     Logger logger = Logger.getLogger(BanchoStrategy.class);
 
@@ -64,6 +67,7 @@ public class BanchoStrategy implements Osu {
     private ScoreModel createScoreModelFromBanchoScore(BanchoScore score) {
         ScoreModel model = new ScoreModel();
 
+        model.setAccuracy(df.format(score.getAccuracy() * 100.0));
         model.setCreatedAt(score.getCreatedAt());
         model.setGameMode(score.getMode());
         model.setBeatMapUrl(score.getBeatmap().getUrl());
