@@ -39,7 +39,7 @@ public class NsfwCommand extends YorickCommand {
         String tag = null;
 
         if (commandModel.getArgs() != null && !commandModel.getArgs().isEmpty()) {
-            tag = commandModel.getArgs().get(0);
+            tag = new ArrayList<>(commandModel.getArgs().keySet()).get(0);
         }
 
         String finalTag = tag;

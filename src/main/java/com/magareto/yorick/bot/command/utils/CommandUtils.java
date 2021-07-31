@@ -9,6 +9,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
 import org.apache.log4j.Logger;
+import org.codehaus.plexus.util.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -17,7 +18,7 @@ public class CommandUtils {
 
     private static Logger logger = Logger.getLogger(CommandUtils.class);
 
-    public static String formatCommand(String input) {
+    public static String getCommandName(String input) {
         if (!input.startsWith(Constants.PREFIX)) {
             return null;
         }
@@ -60,49 +61,24 @@ public class CommandUtils {
         channel.flatMap(c -> c.createMessage(finalErrorMessage)).subscribe();
     }
 
-    public static CommandModel createCommandModelFromInput(String formattedCommand, String input) throws YorickException {
-        String[] initialSplit = input.split(" ");
-        String args = null;
-
-        if (initialSplit.length >= 2) {
-            args = initialSplit[1];
-        }
-
-        logger.info("args -> " + args);
-        return handleCommandModelCreation(formattedCommand, args);
-
-    }
-
-    private static CommandModel handleCommandModelCreation(String commandName, String args) throws YorickException {
+    public static CommandModel createCommandModelFromInput(String commandName, String args) throws YorickException {
 
         CommandModel commandModel = new CommandModel();
         commandModel.setName(commandName);
-//
-//        List<String> commaArgs = null;
-//        String flag = null;
-//        if (args != null) {
-//            String[] split = args.split("=");
-//            if (split.length == 1) {
-//                commaArgs = Arrays.asList(split[0].split(","));
-//            } else if (split.length == 2) {
-//                flag = split[0];
-//                commaArgs = Arrays.asList(split[1].split(","));
-//            } else {
-//                throw new YorickException(ErrorMessages.INVALID_COMMAND);
-//            }
-//        }
-//
-//        commandModel.setArgs(commaArgs);
-
         Map<String, String> formattedArgs = new HashMap<>();
 
         // -m asd
-        if (!args.contains("-")) {
-            handleRawArgs(args, formattedArgs);
-
-        } else {
-
-            handleNormalArgs(args, formattedArgs);
+        if (!StringUtils.isEmpty(args)) {
+            if (!args.contains("-")) {
+                handleRawArgs(args, formattedArgs);
+            } else {
+                logger.info("Inside handle normal args");
+                handleNormalArgs(args, formattedArgs);
+            }
+        }
+        for (String str : formattedArgs.keySet()) {
+            logger.info("arg name -> " + str);
+            logger.info("arg -> " + formattedArgs.get(str));
         }
 
         commandModel.setArgs(formattedArgs);
@@ -126,8 +102,11 @@ public class CommandUtils {
 
             switch (charAt) {
                 case '-': {
-                    lastArg = Character.toString(args.charAt(i++));
+                    i += 1;
+                    int index = getNextWhiteSpaceIndex(i, args);
+                    lastArg = args.substring(i, index);
                     formattedArgs.put(lastArg, null);
+                    i = index;
                 }
                 case ' ': {
                     StringBuilder fullParam = new StringBuilder();
@@ -147,6 +126,18 @@ public class CommandUtils {
                 }
             }
         }
+    }
+
+    private static int getNextWhiteSpaceIndex(int i, String args) {
+        int whitespaceIdx = -1;
+        for (int j = i; j < args.length(); j++) {
+            if(Character.isWhitespace(args.charAt(j))) {
+                whitespaceIdx = j;
+                break;
+            }
+        }
+
+        return whitespaceIdx;
     }
 
     public static boolean isAdmin(Member member) {
@@ -175,4 +166,15 @@ public class CommandUtils {
 
     }
 
+    public static String excludeCommandName(String content, String commandName) {
+        StringBuilder sb = new StringBuilder();
+
+        String[] splits = content.split(" ");
+        if (splits.length >= 2) {
+            sb.append(content.replaceFirst(Constants.PREFIX + commandName + " ", ""));
+        }
+
+        return sb.toString();
+
+    }
 }

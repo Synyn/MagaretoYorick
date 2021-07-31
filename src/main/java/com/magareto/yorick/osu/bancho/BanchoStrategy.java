@@ -48,6 +48,11 @@ public class BanchoStrategy implements Osu {
     @Override
     public List<ScoreModel> getRecentScoresForUser(String userId) throws IOException {
 
+        // If bancho is not enabled, we do not need to handle the logic.
+        if(!Globals.bancho) {
+            return null;
+        }
+
         String token = Globals.redisConnection.get(RedisConstants.BANCHO_ACCESS_TOKEN_KEY);
         if (token == null) {
             token = generateNewToken();

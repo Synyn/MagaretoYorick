@@ -7,7 +7,6 @@ import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.service.CommandService;
 import com.magareto.yorick.service.HelpService;
 import com.magareto.yorick.service.OsuService;
-import com.magareto.yorick.service.SettingsService;
 import discord4j.core.object.entity.Message;
 import org.apache.log4j.Logger;
 
@@ -22,24 +21,23 @@ public class CommandDispatcher {
     private static OsuService osuService = Globals.injector.getInstance(OsuService.class);
 
     public static void dispatch(Message message) {
-        String formattedCommand = CommandUtils.formatCommand(message.getContent());
+        String commandName = CommandUtils.getCommandName(message.getContent());
+        String commandContent = CommandUtils.excludeCommandName(message.getContent(), commandName);
 
         try {
-            logger.info("Formatted command -> " + formattedCommand);
+            logger.info("Formatted command -> " + commandName);
+            logger.info("Command content -> " + commandContent);
             /**
              * This means that this was not actually a command, but just a message
              */
-            if (formattedCommand == null) {
-
+            if (commandName == null) {
                 osuService.trackNewUser(message);
-
-
                 return;
             }
 
-            CommandModel commandModel = CommandUtils.createCommandModelFromInput(formattedCommand, message.getContent());
+            CommandModel commandModel = CommandUtils.createCommandModelFromInput(commandName, commandContent);
 
-            if (!formattedCommand.equals(Constants.HELP_COMMAND)) {
+            if (!commandName.equals(Constants.HELP_COMMAND)) {
                 commandService.handleCommand(commandModel, message);
             } else {
                 helpService.handleHelpCommand(commandModel, message);
@@ -52,7 +50,7 @@ public class CommandDispatcher {
         } catch (Exception e) {
             e.printStackTrace();
             YorickException yorickException = new YorickException();
-            yorickException.setCommand(formattedCommand);
+            yorickException.setCommand(commandName);
 
             CommandUtils.sendErrorMessage(message.getChannel(), yorickException);
         }

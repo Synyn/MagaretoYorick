@@ -19,6 +19,7 @@ import discord4j.discordjson.json.ActivityUpdateRequest;
 import discord4j.discordjson.json.gateway.ImmutableStatusUpdate;
 import discord4j.discordjson.json.gateway.StatusUpdate;
 import org.apache.log4j.Logger;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.util.Optional;
 
@@ -41,6 +42,20 @@ public class MagaretoYorick {
         Globals.redisConnection = RedisInitalizer.createConnection(RedisConstants.HOSTNAME);
 
         final String BOT_TOKEN = System.getenv(Constants.BOT_TOKEN_ENV);
+        final String BANCHO_CLIENT_SECRET = System.getenv(Constants.BANCHO_CLIENT_SECRET);
+
+        logger.info("BOT_TOKEN -> " + BOT_TOKEN);
+        logger.info("BANCHO_CLIENT_SECRET -> " + BANCHO_CLIENT_SECRET);
+
+        if(BOT_TOKEN == null) {
+            throw new RuntimeException(ErrorMessages.BOT_COULD_NOT_START);
+        }
+
+        if(StringUtils.isEmpty(BANCHO_CLIENT_SECRET)) {
+            Globals.bancho = false;
+        }else {
+            Globals.bancho = true;
+        }
 
         GatewayDiscordClient client = DiscordClientBuilder.create(BOT_TOKEN)
                 .build()
@@ -56,6 +71,7 @@ public class MagaretoYorick {
         client.updatePresence(statusUpdate).subscribe();
 
         EventDispatcher.dispatchEvents(client);
+
 
         CronInitializer.registerCronJobs();
         RedisInitalizer.registerSubscribers(client);

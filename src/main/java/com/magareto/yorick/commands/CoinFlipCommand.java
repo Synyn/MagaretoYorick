@@ -14,9 +14,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Command(name = "flip")
 public class CoinFlipCommand extends YorickCommand {
@@ -25,9 +23,7 @@ public class CoinFlipCommand extends YorickCommand {
 
     @Override
     public void execute(Message message, CommandModel commandModel) throws YorickException, Exception {
-        List<String> args = commandModel.getArgs();
-
-        Map<String, String> args1 = commandModel.getArgs();
+        List<String> args = new ArrayList<>(commandModel.getArgs().keySet());
 
         if (args.size() > 1) {
             throw new YorickException(ErrorMessages.TOO_MANY_ARGUMENTS);

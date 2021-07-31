@@ -1,6 +1,7 @@
 package com.magareto.yorick.cron;
 
 import com.magareto.yorick.bot.constants.RedisConstants;
+import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.cron.osu.ScoreCronJob;
 import com.magareto.yorick.db.redis.RedisInitalizer;
 import discord4j.core.GatewayDiscordClient;
@@ -19,11 +20,13 @@ public class CronInitializer {
             Jedis connection = RedisInitalizer.createConnection(RedisConstants.HOSTNAME);
 
             Timer timer = new Timer();
-            timer.scheduleAtFixedRate(new ScoreCronJob(connection), 0, 10000);
+
+            if (Globals.bancho) {
+                timer.scheduleAtFixedRate(new ScoreCronJob(connection), 0, 10000);
+            }
         });
 
         thread.start();
-
 
 
     }

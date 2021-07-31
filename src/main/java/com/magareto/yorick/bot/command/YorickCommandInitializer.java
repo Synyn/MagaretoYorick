@@ -26,19 +26,11 @@ public class YorickCommandInitializer {
             Constructor<?> constructor = reflectedCommand.getConstructor();
 
 
-            Class<?>[] interfaces = reflectedCommand.getInterfaces();
+            Class<?> superclass = reflectedCommand.getSuperclass();
+            String superName = superclass.getSimpleName();
 
-            if (interfaces.length == 0) {
+            if (!superName.equals(YorickCommand.class.getSimpleName())) {
                 throw new Exception(ErrorMessages.COMMAND_CLASS_NOT_VALID);
-            }
-
-            for (Class<?> anInterface : interfaces) {
-                String iName = anInterface.getSimpleName();
-                logger.info("Name -> " + iName);
-
-                if (!iName.equals(YorickCommand.class.getSimpleName())) {
-                    throw new Exception(ErrorMessages.COMMAND_CLASS_NOT_VALID);
-                }
             }
 
             Command annotation = reflectedCommand.getAnnotation(Command.class);

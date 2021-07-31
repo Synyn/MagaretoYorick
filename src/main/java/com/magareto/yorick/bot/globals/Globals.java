@@ -48,4 +48,12 @@ public class Globals {
      */
     public static Jedis redisConnection;
 
+    /**
+     * This is a flag which is set as true if the bancho credentials are provided to the bot.
+     *
+     * This is used to disable a performance heavy functionality of the bot.
+     *
+     */
+    public static boolean bancho;
+
 }
