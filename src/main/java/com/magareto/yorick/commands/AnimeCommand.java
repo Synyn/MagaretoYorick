@@ -4,7 +4,6 @@ import com.magareto.yorick.bot.command.CommandModel;
 import com.magareto.yorick.bot.command.YorickCommand;
 import com.magareto.yorick.bot.command.annotations.Command;
 import com.magareto.yorick.bot.command.utils.CommandUtils;
-import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.Globals;
@@ -13,23 +12,23 @@ import com.magareto.yorick.models.anime.Attributes;
 import com.magareto.yorick.service.AnimeService;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
-import io.netty.util.internal.StringUtil;
-import javassist.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Command(name = "anime", description = "Recommends anime.")
-public class AnimeCommand implements YorickCommand {
+public class AnimeCommand extends YorickCommand {
+    private static final String SEASON_FLAG_NAME = "season";
+    private static final String NAME_FLAG_NAME = "name";
     private Logger logger = Logger.getLogger(AnimeCommand.class);
 
     private final static String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
     public static final Set<String> GENRE_ARGUMENT_LIST = new HashSet<>(Arrays.asList("genre", "genres"));
+    private static final String GENRE_FLAG_NAME = "genres";
 
     private static final String TITLE_ENG = "en";
     private static final String TITLE_EN_US = "en_us";
@@ -47,7 +46,7 @@ public class AnimeCommand implements YorickCommand {
 
         CompletableFuture.runAsync(() -> {
             try {
-                Anime anime = handleCommand(commandModel.getFlag(), commandModel.getArgs());
+                Anime anime = handleCommand(commandModel.getArgs());
                 sendAnime(message.getChannel(), anime);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -56,14 +55,37 @@ public class AnimeCommand implements YorickCommand {
         });
     }
 
-    private Anime handleCommand(String flag, List<String> arguments) throws YorickException {
+    private Anime handleCommand(Map<String, String> arguments) throws YorickException {
         Anime anime = null;
 
-        if (flag == null || GENRE_ARGUMENT_LIST.contains(flag)) {
-            anime = animeService.getRandomRecommendationForGenres(arguments);
-        } else {
-            throw new YorickException(ErrorMessages.INVALID_ARGUMENT);
+        if (arguments.isEmpty()) {
+            throw new YorickException(ErrorMessages.INVALID_COMMAND);
         }
+
+        Set<String> flags = arguments.keySet();
+
+        Map<String, List<String>> filters = new HashMap<>();
+
+        if (flags.contains(GENRE_FLAG_NAME)) {
+            String genreString = arguments.get(GENRE_FLAG_NAME);
+            List<String> genres = Arrays.asList(genreString.split(","));
+            filters.put("genres", genres);
+        }
+
+        if (flags.contains(SEASON_FLAG_NAME)) {
+            filters.put("season", Collections.singletonList(arguments.get("season")));
+        }
+
+        if (flags.contains(NAME_FLAG_NAME)) {
+            filters.put("text", Collections.singletonList(arguments.get(NAME_FLAG_NAME)));
+        }
+
+        if (!filters.isEmpty()) {
+            anime = animeService.getRandomAnimeForFilters(filters);
+        } else {
+            throw new YorickException(ErrorMessages.NOT_FOUND);
+        }
+
 
         return anime;
     }

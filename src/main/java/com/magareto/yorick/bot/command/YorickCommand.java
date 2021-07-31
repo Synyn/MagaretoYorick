@@ -7,8 +7,26 @@ import java.util.List;
 import java.util.Map;
 
 
-public interface YorickCommand {
-    void execute(Message message, CommandModel commandModel) throws YorickException, Exception;
+public abstract class YorickCommand {
+    protected String commandName;
+    protected String commandDescription;
 
-    List<String> getArguments();
+    abstract public void execute(Message message, CommandModel commandModel) throws YorickException, Exception;
+    abstract public List<String> getArguments();
+
+    public String getCommandName() {
+        return commandName;
+    }
+
+    public void setCommandName(String commandName) {
+        this.commandName = commandName;
+    }
+
+    public String getCommandDescription() {
+        return commandDescription;
+    }
+
+    public void setCommandDescription(String commandDescription) {
+        this.commandDescription = commandDescription;
+    }
 }

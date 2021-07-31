@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Command(name = "ping", description = "Writes 'pong !' in chat.")
-public class BotCommand implements YorickCommand {
+public class BotCommand extends YorickCommand {
     private static final Logger logger = Logger.getLogger(BotCommand.class);
 
     @Override

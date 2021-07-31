@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Command(name = "waifu", description = "Sends a picture of an waifu.")
-public class WaifuCommand implements YorickCommand {
+public class WaifuCommand extends YorickCommand {
 
     private WaifuService waifuService = Globals.injector.getInstance(WaifuService.class);
 

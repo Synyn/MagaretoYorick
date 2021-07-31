@@ -11,7 +11,7 @@ import discord4j.core.object.entity.Message;
 import java.util.List;
 
 @Command(name = "meme", description = "sends a meme in the chat.")
-public class MemeCommand implements YorickCommand {
+public class MemeCommand extends YorickCommand {
 
     public static MemeService memeService = Globals.injector.getInstance(MemeService.class);
 

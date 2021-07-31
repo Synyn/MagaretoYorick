@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
-import com.magareto.yorick.models.anime.Anime;
-import com.magareto.yorick.models.anime.AnimeResponse;
-import com.magareto.yorick.models.anime.Inclusion;
-import com.magareto.yorick.models.anime.RelationShipDataEntity;
+import com.magareto.yorick.models.anime.*;
 import com.magareto.yorick.service.AnimeService;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -35,12 +32,7 @@ public class AnimeServiceImpl implements AnimeService {
     }
 
     @Override
-    public Anime getRandomRecommendationForGenres(List<String> genres) throws YorickException {
-
-        Map<String, List<String>> filters = new HashMap<>();
-        if (genres != null && !genres.isEmpty()) {
-            filters.put("genres", genres);
-        }
+    public Anime getRandomAnimeForFilters(Map<String, List<String>> filters) throws YorickException {
 
         AnimeResponse animeResponse = findAll(filters);
         List<Anime> animeList = animeResponse.getData();

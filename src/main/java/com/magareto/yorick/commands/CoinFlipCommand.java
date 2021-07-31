@@ -19,13 +19,15 @@ import java.util.Map;
 import java.util.Random;
 
 @Command(name = "flip")
-public class CoinFlipCommand implements YorickCommand {
+public class CoinFlipCommand extends YorickCommand {
 
     Logger logger = Logger.getLogger(CoinFlipCommand.class);
 
     @Override
     public void execute(Message message, CommandModel commandModel) throws YorickException, Exception {
         List<String> args = commandModel.getArgs();
+
+        Map<String, String> args1 = commandModel.getArgs();
 
         if (args.size() > 1) {
             throw new YorickException(ErrorMessages.TOO_MANY_ARGUMENTS);

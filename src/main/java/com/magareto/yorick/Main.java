@@ -9,8 +9,7 @@ public class Main {
     private static Logger logger = Logger.getLogger(Main.class);
 
     public static void main(String[] args) {
-        MagaretoYorick magaretoYorick = new MagaretoYorick();
-        magaretoYorick.runBot();
+        MagaretoYorick.runBot();
     }
 
 

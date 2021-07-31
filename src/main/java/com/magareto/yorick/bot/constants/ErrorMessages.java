@@ -21,6 +21,7 @@ public class ErrorMessages {
     public static final String INVALID_OSU_SERVER = "The server that is specified in this message seems to be invalid.";
     public static final String OSU_USER_IS_TRACKED = "This user is already being tracked.";
     public static final String INVALID_PERMISSIONS = "You don`t have permissions to do this.";
+    public static final String BOT_COULD_NOT_START = "The bot was unable to start, probably the BOT_TOKEN env variable is not set.";
 
     public static String COMMAND_CLASS_NOT_VALID = "There seems to be an annotated command, which does not implement the \" +\n" +
             "                        \"YorickCommand class.";

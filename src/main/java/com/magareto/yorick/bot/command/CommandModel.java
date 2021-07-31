@@ -1,11 +1,12 @@
 package com.magareto.yorick.bot.command;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CommandModel {
     private String name;
-    private String flag;
-    private List<String> args;
+    private Map<String, String> args;
 
     public String getName() {
         return name;
@@ -15,19 +16,11 @@ public class CommandModel {
         this.name = name;
     }
 
-    public List<String> getArgs() {
+    public Map<String, String> getArgs() {
         return args;
     }
 
-    public void setArgs(List<String> args) {
+    public void setArgs(Map<String, String> args) {
         this.args = args;
-    }
-
-    public String getFlag() {
-        return flag;
-    }
-
-    public void setFlag(String flag) {
-        this.flag = flag;
     }
 }

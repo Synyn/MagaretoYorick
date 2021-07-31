@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Command(name = "osu", description = "Configure osu settings for this server.")
-public class OsuCommand implements YorickCommand {
+public class OsuCommand extends YorickCommand {
 
     private final String trackingCommand = "track";
     private final String changeTrackingChannelCommand = "track-channel";

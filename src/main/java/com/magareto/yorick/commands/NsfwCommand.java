@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Command(name = "nsfw", description = "Send an NSFW picture if called in a nsfw channel.")
-public class NsfwCommand implements YorickCommand {
+public class NsfwCommand extends YorickCommand {
 
     private WaifuService waifuService = Globals.injector.getInstance(WaifuService.class);
 

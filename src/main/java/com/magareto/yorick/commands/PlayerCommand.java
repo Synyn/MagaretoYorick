@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.Queue;
 
 @Command(name = "player")
-public class PlayerCommand implements YorickCommand {
+public class PlayerCommand extends YorickCommand {
 
     @Override
     public void execute(Message message, CommandModel commandModel) throws YorickException, Exception {

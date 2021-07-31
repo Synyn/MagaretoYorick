@@ -3,7 +3,9 @@ package com.magareto.yorick.bot;
 import com.google.inject.Guice;
 import com.magareto.yorick.bot.command.YorickCommandInitializer;
 import com.magareto.yorick.bot.constants.Constants;
+import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.constants.RedisConstants;
+import com.magareto.yorick.bot.exception.YorickException;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.bot.injector.YorickInjectorConfig;
 import com.magareto.yorick.cron.CronInitializer;
@@ -21,11 +23,11 @@ import org.apache.log4j.Logger;
 import java.util.Optional;
 
 public class MagaretoYorick {
-    private GatewayDiscordClient client;
 
-    private final Logger logger = Logger.getLogger(MagaretoYorick.class);
+    private static final Logger logger = Logger.getLogger(MagaretoYorick.class);
 
-    public void runBot() {
+
+    public static void runBot() {
 
         Globals.injector = Guice.createInjector(new YorickInjectorConfig());
 
@@ -40,10 +42,14 @@ public class MagaretoYorick {
 
         final String BOT_TOKEN = System.getenv(Constants.BOT_TOKEN_ENV);
 
-        client = DiscordClientBuilder.create(BOT_TOKEN)
+        GatewayDiscordClient client = DiscordClientBuilder.create(BOT_TOKEN)
                 .build()
                 .login()
                 .block();
+
+        if(client == null) {
+            throw new RuntimeException(ErrorMessages.BOT_COULD_NOT_START);
+        }
 
 
         StatusUpdate statusUpdate = ImmutableStatusUpdate.builder().afk(true).status("y!help").game(Activity.listening("to y!help")).build();

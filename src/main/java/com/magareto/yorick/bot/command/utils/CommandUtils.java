@@ -1,14 +1,10 @@
 package com.magareto.yorick.bot.command.utils;
 
 import com.magareto.yorick.bot.command.CommandModel;
-import com.magareto.yorick.bot.command.InternalCommand;
 import com.magareto.yorick.bot.constants.Constants;
 import com.magareto.yorick.bot.constants.ErrorMessages;
 import com.magareto.yorick.bot.exception.YorickException;
-import com.magareto.yorick.bot.globals.Globals;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
@@ -65,7 +61,6 @@ public class CommandUtils {
     }
 
     public static CommandModel createCommandModelFromInput(String formattedCommand, String input) throws YorickException {
-
         String[] initialSplit = input.split(" ");
         String args = null;
 
@@ -82,25 +77,76 @@ public class CommandUtils {
 
         CommandModel commandModel = new CommandModel();
         commandModel.setName(commandName);
+//
+//        List<String> commaArgs = null;
+//        String flag = null;
+//        if (args != null) {
+//            String[] split = args.split("=");
+//            if (split.length == 1) {
+//                commaArgs = Arrays.asList(split[0].split(","));
+//            } else if (split.length == 2) {
+//                flag = split[0];
+//                commaArgs = Arrays.asList(split[1].split(","));
+//            } else {
+//                throw new YorickException(ErrorMessages.INVALID_COMMAND);
+//            }
+//        }
+//
+//        commandModel.setArgs(commaArgs);
 
-        List<String> commaArgs = null;
-        String flag = null;
-        if (args != null) {
-            String[] split = args.split("=");
-            if (split.length == 1) {
-                commaArgs = Arrays.asList(split[0].split(","));
-            } else if (split.length == 2) {
-                flag = split[0];
-                commaArgs = Arrays.asList(split[1].split(","));
-            } else {
-                throw new YorickException(ErrorMessages.INVALID_COMMAND);
-            }
+        Map<String, String> formattedArgs = new HashMap<>();
+
+        // -m asd
+        if (!args.contains("-")) {
+            handleRawArgs(args, formattedArgs);
+
+        } else {
+
+            handleNormalArgs(args, formattedArgs);
         }
 
-        commandModel.setArgs(commaArgs);
-        commandModel.setFlag(flag);
+        commandModel.setArgs(formattedArgs);
 
         return commandModel;
+    }
+
+    private static void handleRawArgs(String args, Map<String, String> formattedArgs) {
+        String[] rawArgs = args.split(" ");
+
+        for (String arg : rawArgs) {
+            formattedArgs.put(arg, null);
+        }
+    }
+
+    private static void handleNormalArgs(String args, Map<String, String> formattedArgs) {
+        String lastArg = null;
+
+        for (int i = 0; i < args.length(); i++) {
+            char charAt = args.charAt(i);
+
+            switch (charAt) {
+                case '-': {
+                    lastArg = Character.toString(args.charAt(i++));
+                    formattedArgs.put(lastArg, null);
+                }
+                case ' ': {
+                    StringBuilder fullParam = new StringBuilder();
+
+                    while (charAt != ' ') {
+                        i += 1;
+                        if (i == args.length()) {
+                            break;
+                        }
+
+                        charAt = args.charAt(i);
+                        fullParam.append(charAt);
+                    }
+
+                    formattedArgs.put(lastArg, fullParam.toString());
+
+                }
+            }
+        }
     }
 
     public static boolean isAdmin(Member member) {
@@ -118,8 +164,8 @@ public class CommandUtils {
 
         boolean isAdmin = false;
 
-        for(Permission permission: permissions.asEnumSet()) {
-            if(permission == Permission.ADMINISTRATOR) {
+        for (Permission permission : permissions.asEnumSet()) {
+            if (permission == Permission.ADMINISTRATOR) {
                 isAdmin = true;
                 break;
             }

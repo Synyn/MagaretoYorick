@@ -45,6 +45,8 @@ public class YorickCommandInitializer {
 
             Object object = constructor.newInstance();
             YorickCommand command = (YorickCommand) object;
+            command.setCommandName(annotation.name());
+            command.setCommandDescription(annotation.description());
 
             String commandName = annotation.name();
             InternalCommand internalCommand = new InternalCommand(annotation.name(), annotation.description(), command);

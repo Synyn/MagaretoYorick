@@ -7,6 +7,9 @@ import java.util.List;
 
 public class GatariStrategy implements Osu {
 
+    private final static String BASE_URL = "https://api.gatari.pw";
+    private final static String SCORE_URL = "/user/scores/recent?id=";
+
     @Override
     public List<ScoreModel> getRecentScoresForUser(String userId) {
         return null;
