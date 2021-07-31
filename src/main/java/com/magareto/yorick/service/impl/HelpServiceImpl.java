@@ -101,10 +101,11 @@ public class HelpServiceImpl implements HelpService {
         if (commandModel.getArgs() == null || commandModel.getArgs().isEmpty()) {
             Globals.commands.forEach((name, command) -> helpForCommands.add(command));
         } else if (commandModel.getArgs().size() == 1) {
-            InternalCommand internalCommand = Globals.commands.get(commandModel.getArgs().get(0));
+            List<String> args = new ArrayList<>(commandModel.getArgs().keySet());
+            InternalCommand internalCommand = Globals.commands.get(args.get(0));
 
             if (internalCommand == null) {
-                throw new YorickException(String.format(ErrorMessages.COMMAND_NOT_FOUND, "`" + Constants.PREFIX + commandModel.getArgs().get(0) + "`", "`" + Constants.PREFIX + Constants.HELP_COMMAND + "`"));
+                throw new YorickException(String.format(ErrorMessages.COMMAND_NOT_FOUND, "`" + Constants.PREFIX + args.get(0) + "`", "`" + Constants.PREFIX + Constants.HELP_COMMAND + "`"));
             }
 
             helpForCommands.add(internalCommand);
