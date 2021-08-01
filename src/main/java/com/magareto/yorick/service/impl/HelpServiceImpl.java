@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class HelpServiceImpl implements HelpService {
 
-    private Logger logger = Logger.getLogger(HelpServiceImpl.class);
+    private final Logger logger = Logger.getLogger(HelpServiceImpl.class);
 
     private void handleHelpForCommands(List<InternalCommand> helpForCommands, Mono<MessageChannel> channel) {
         StringBuilder sb = new StringBuilder();
