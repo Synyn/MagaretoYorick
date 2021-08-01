@@ -95,47 +95,49 @@ public class CommandUtils {
     }
 
     private static void handleNormalArgs(String args, Map<String, String> formattedArgs) {
+        // -arg asd -arg asd
+
         String lastArg = null;
-
-        for (int i = 0; i < args.length(); i++) {
+        logger.info(args.length());
+        int i = 0;
+        while (i < args.length()) {
             char charAt = args.charAt(i);
+            if (charAt == '-') {
+                i += 1;
+                int index = CommandUtils.getNextWhiteSpaceIndex(i, args);
+                lastArg = args.substring(i, index);
 
-            switch (charAt) {
-                case '-': {
-                    i += 1;
-                    int index = getNextWhiteSpaceIndex(i, args);
-                    lastArg = args.substring(i, index);
-                    logger.info("last arg -> " + lastArg);
-                    formattedArgs.put(lastArg, null);
-                    i = index;
-                }
-                case ' ': {
-                    if(args.charAt(i + 1) == '-') {
-                        continue;
+                formattedArgs.put(lastArg, null);
+
+                i = index + 1;
+            } else {
+                int index = CommandUtils.getNextWhiteSpaceIndex(i, args);
+                if (index + 1 != args.length()) {
+                    index = args.length();
+                } else {
+                    while (index > args.length() || args.charAt(index) != '-') {
+                        index += 1;
                     }
-                    StringBuilder fullParam = new StringBuilder();
-
-                    while (charAt != ' ') {
-                        i += 1;
-                        if (i == args.length()) {
-                            break;
-                        }
-
-                        charAt = args.charAt(i);
-                        fullParam.append(charAt);
-                    }
-
-                    formattedArgs.put(lastArg, fullParam.toString());
-
                 }
+
+                if (index + 1 == args.length()) {
+                    index = args.length();
+                }
+
+                String param = args.substring(i, index);
+
+                formattedArgs.put(lastArg, param);
+                i = index + 1;
             }
+
         }
+
     }
 
     private static int getNextWhiteSpaceIndex(int i, String args) {
-        int whitespaceIdx = -1;
+        int whitespaceIdx = args.length();
         for (int j = i; j < args.length(); j++) {
-            if(Character.isWhitespace(args.charAt(j))) {
+            if (Character.isWhitespace(args.charAt(j))) {
                 whitespaceIdx = j;
                 break;
             }
