@@ -3,6 +3,7 @@ package com.magareto.yorick.bot.globals;
 import com.google.inject.Injector;
 import com.magareto.yorick.bot.command.InternalCommand;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.Map;
 
@@ -47,6 +48,11 @@ public class Globals {
      * Globals.redisConnection
      */
     public static Jedis redisConnection;
+
+    /**
+     * Jedis Pool, this is used for pooling. This is used for redis search queries
+     */
+    public static JedisPool jedisPool;
 
     /**
      * This is a flag which is set as true if the bancho credentials are provided to the bot.

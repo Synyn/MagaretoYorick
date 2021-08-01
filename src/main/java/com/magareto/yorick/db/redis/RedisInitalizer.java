@@ -6,6 +6,7 @@ import com.magareto.yorick.db.redis.message.subscriber.OsuSubscriber;
 import com.magareto.yorick.db.redis.model.Channel;
 import discord4j.core.GatewayDiscordClient;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 public class RedisInitalizer {
     public static Jedis createConnection(String hostname) {
@@ -17,4 +18,9 @@ public class RedisInitalizer {
 
         connection.subscribe(new OsuSubscriber(client), Channel.OSU.name());
     }
+
+    public static JedisPool createJedisPool(String hostname){
+        return new JedisPool(hostname);
+    }
+
 }

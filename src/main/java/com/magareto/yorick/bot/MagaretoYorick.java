@@ -40,6 +40,7 @@ public class MagaretoYorick {
         }
 
         Globals.redisConnection = RedisInitalizer.createConnection(RedisConstants.HOSTNAME);
+        Globals.jedisPool = RedisInitalizer.createJedisPool(RedisConstants.HOSTNAME);
 
         final String BOT_TOKEN = System.getenv(Constants.BOT_TOKEN_ENV);
         final String BANCHO_CLIENT_SECRET = System.getenv(Constants.BANCHO_CLIENT_SECRET);

@@ -1,15 +1,20 @@
 package com.magareto.yorick.service.impl;
 
+import com.magareto.yorick.bot.constants.RedisConstants;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.models.manhwa.Manhwa;
 import com.magareto.yorick.models.manhwa.ManhwaFilter;
 import com.magareto.yorick.service.ManhwaService;
+import io.redisearch.Query;
+import io.redisearch.SearchResult;
+import io.redisearch.client.Client;
+import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,12 +26,86 @@ public class ManhwaServiceImpl implements ManhwaService {
 
     Logger logger = Logger.getLogger(ManhwaServiceImpl.class);
 
-//    public Manhwa recommendRandomManhwa(ManhwaFilter filter) {
-//        String key = Globals.redisConnection.randomKey();
-//
-//
-//
-//    }
+
+    @Override
+    public List<Manhwa> recommendManhwa(ManhwaFilter filter) {
+        List<Manhwa> manhwas = new ArrayList<>();
+
+        List<io.redisearch.Document> foundManhwas = findManhwas(filter);
+        if (foundManhwas.isEmpty()) {
+            return manhwas;
+        }
+
+        for (io.redisearch.Document manhwaDoc : foundManhwas) {
+            Manhwa manhwa = createManhwaFromDocument(manhwaDoc);
+            manhwas.add(manhwa);
+        }
+
+
+        return manhwas;
+    }
+
+    private Manhwa createManhwaFromDocument(io.redisearch.Document manhwaDoc) {
+        String rank = (String) manhwaDoc.get("rank");
+        String totalViews = (String) manhwaDoc.get("totalViews");
+        String releaseStatus = (String) manhwaDoc.get("releaseStatus");
+        String summary = (String) manhwaDoc.get("summary");
+        String title = (String) manhwaDoc.get("title");
+        String authors = (String) manhwaDoc.get("authors");
+        String id = (String) manhwaDoc.get("id");
+        String alias = (String) manhwaDoc.get("alias");
+        String imageLink = (String) manhwaDoc.get("imageLink");
+        String genres = (String) manhwaDoc.get("genres");
+        String monthly = (String) manhwaDoc.get("monthlyViews");
+        String seriesLink = (String) manhwaDoc.get("seriesLink");
+
+        Manhwa manhwa = new Manhwa();
+        manhwa.setAlias(alias);
+        manhwa.setGenres(genres);
+        manhwa.setAuthors(authors);
+        manhwa.setTotalViews(totalViews);
+        manhwa.setReleaseStatus(releaseStatus);
+        manhwa.setSummary(summary);
+        manhwa.setTitle(title);
+        manhwa.setId(id);
+        manhwa.setImageLink(imageLink);
+        manhwa.setMonthlyViews(monthly);
+        manhwa.setSeriesLink(seriesLink);
+        manhwa.setRank(rank);
+
+        return manhwa;
+    }
+
+    private List<io.redisearch.Document> findManhwas(ManhwaFilter filter) {
+        logger.info("Inside recommends");
+        Client client = new Client(RedisConstants.MANHWA_INDEX_NAME, Globals.jedisPool);
+
+        List<String> genres = filter.getGenres();
+        String title = filter.getTitle();
+
+        StringBuilder fullText = new StringBuilder();
+        if (genres != null && !genres.isEmpty()) {
+            for (String genre : genres) {
+                fullText.append(genre);
+                fullText.append(" ");
+            }
+        }
+
+        if (!StringUtils.isEmpty(title)) {
+            fullText.append(title);
+        }
+
+        logger.info("fulltext -> " + fullText.toString());
+
+        Query query = new Query(fullText.toString());
+        if (filter.isTop()) {
+            query.setSortBy("rank", true);
+        }
+
+
+        SearchResult search = client.search(query);
+        return search.docs;
+    }
 
     @Override
     public void test() {

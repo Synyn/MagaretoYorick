@@ -112,7 +112,7 @@ public class CommandUtils {
                 i = index + 1;
             } else {
                 int index = CommandUtils.getNextWhiteSpaceIndex(i, args);
-                if (index + 1 != args.length()) {
+                if (index + 1 == args.length()) {
                     index = args.length();
                 } else {
                     while (index > args.length() || args.charAt(index) != '-') {
