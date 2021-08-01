@@ -115,12 +115,18 @@ public class CommandUtils {
                 if (index + 1 == args.length()) {
                     index = args.length();
                 } else {
-                    while (index > args.length() || args.charAt(index) != '-') {
-                        index += 1;
+                    while (index < args.length()) {
+                        if (args.charAt(index) == '-') {
+                            index -= 1;
+                            break;
+                        } else {
+                            index += 1;
+                        }
                     }
                 }
+                logger.info("Index -> " + index);
 
-                if (index + 1 == args.length()) {
+                if(index + 1 == args.length()) {
                     index = args.length();
                 }
 
@@ -128,6 +134,7 @@ public class CommandUtils {
 
                 formattedArgs.put(lastArg, param);
                 i = index + 1;
+                logger.info("");
             }
 
         }
