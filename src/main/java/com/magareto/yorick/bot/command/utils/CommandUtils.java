@@ -105,10 +105,14 @@ public class CommandUtils {
                     i += 1;
                     int index = getNextWhiteSpaceIndex(i, args);
                     lastArg = args.substring(i, index);
+                    logger.info("last arg -> " + lastArg);
                     formattedArgs.put(lastArg, null);
                     i = index;
                 }
                 case ' ': {
+                    if(args.charAt(i + 1) == '-') {
+                        continue;
+                    }
                     StringBuilder fullParam = new StringBuilder();
 
                     while (charAt != ' ') {
