@@ -22,13 +22,13 @@ import java.util.concurrent.CompletableFuture;
 @Command(name = "anime", description = "Recommends anime.")
 public class AnimeCommand extends YorickCommand {
     private static final String SEASON_FLAG_NAME = "season";
+    private static final String GENRE_FLAG_NAME = "genres";
     private static final String NAME_FLAG_NAME = "name";
     private Logger logger = Logger.getLogger(AnimeCommand.class);
 
     private final static String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
     public static final Set<String> GENRE_ARGUMENT_LIST = new HashSet<>(Arrays.asList("genre", "genres"));
-    private static final String GENRE_FLAG_NAME = "genres";
 
     private static final String TITLE_ENG = "en";
     private static final String TITLE_EN_US = "en_us";
@@ -166,7 +166,7 @@ public class AnimeCommand extends YorickCommand {
 
     @Override
     public String getHelp() {
-        return null;
+        return "Arguments - ";
     }
 
 }

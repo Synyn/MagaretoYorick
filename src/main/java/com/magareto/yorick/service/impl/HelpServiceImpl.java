@@ -46,7 +46,7 @@ public class HelpServiceImpl implements HelpService {
 
         String help = internalCommand.getCommand().getHelp();
 
-        if(help == null) {
+        if(StringUtils.isEmpty(help)) {
             help = autoBuildHelp(internalCommand);
         }
 

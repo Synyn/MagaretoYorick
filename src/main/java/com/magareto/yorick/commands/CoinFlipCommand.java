@@ -49,6 +49,11 @@ public class CoinFlipCommand extends YorickCommand {
         return Arrays.asList("heads", "tails");
     }
 
+    @Override
+    public String getHelp() {
+        return null;
+    }
+
     private void sendFlip(Message message, CoinFlip bet, CoinFlip flip) {
         String result = null;
         User author = message.getAuthor().get();
