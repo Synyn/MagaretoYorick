@@ -27,15 +27,19 @@ public class ManhwaCommand extends YorickCommand {
             ManhwaFilter manhwaFilter = new ManhwaFilter();
             String genres = args.get("genres");
             String title = args.get("title");
+            Object top = args.get("top");
+
             if (genres != null) {
                 String trimmed = genres.trim();
                 List<String> filterGenres = Arrays.asList(trimmed.split(","));
                 manhwaFilter.setGenres(filterGenres);
             }
 
-            if(title != null) {
-
+            if (title != null) {
+                manhwaFilter.setTitle(title);
             }
+
+            manhwaFilter.setTop(top != null);
 
         }
 
