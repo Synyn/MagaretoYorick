@@ -63,4 +63,9 @@ public class NsfwCommand extends YorickCommand {
         return new ArrayList<>(WaifuServiceImpl.nsfwGenres);
     }
 
+    @Override
+    public String getHelp() {
+        return null;
+    }
+
 }

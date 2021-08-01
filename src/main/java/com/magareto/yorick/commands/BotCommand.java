@@ -29,4 +29,9 @@ public class BotCommand extends YorickCommand {
     public List<String> getArguments() {
         return null;
     }
+
+    @Override
+    public String getHelp() {
+        return null;
+    }
 }

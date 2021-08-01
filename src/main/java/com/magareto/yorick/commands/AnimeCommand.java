@@ -164,4 +164,9 @@ public class AnimeCommand extends YorickCommand {
         return null;
     }
 
+    @Override
+    public String getHelp() {
+        return null;
+    }
+
 }

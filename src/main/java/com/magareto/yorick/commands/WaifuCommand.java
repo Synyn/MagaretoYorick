@@ -49,4 +49,9 @@ public class WaifuCommand extends YorickCommand {
     public List<String> getArguments() {
         return new ArrayList<>(WaifuServiceImpl.sfwGenres);
     }
+
+    @Override
+    public String getHelp() {
+        return null;
+    }
 }

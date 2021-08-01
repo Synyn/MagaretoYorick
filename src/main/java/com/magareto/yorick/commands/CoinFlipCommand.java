@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 
-@Command(name = "flip")
+@Command(name = "flip", description = "Flip a coin")
 public class CoinFlipCommand extends YorickCommand {
 
     Logger logger = Logger.getLogger(CoinFlipCommand.class);
@@ -46,7 +46,7 @@ public class CoinFlipCommand extends YorickCommand {
 
     @Override
     public List<String> getArguments() {
-        return null;
+        return Arrays.asList("heads", "tails");
     }
 
     private void sendFlip(Message message, CoinFlip bet, CoinFlip flip) {

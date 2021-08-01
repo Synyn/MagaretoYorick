@@ -44,6 +44,21 @@ public class HelpServiceImpl implements HelpService {
             throw new YorickException(ErrorMessages.COMMAND_NOT_YET_IMPLEMENTED);
         }
 
+        String help = internalCommand.getCommand().getHelp();
+
+        if(help == null) {
+            help = autoBuildHelp(internalCommand);
+        }
+
+        String finalHelp = help;
+        channel.subscribe(c -> c.createEmbed(e -> {
+            e.setTitle(String.format(Messages.HELP_HEADING, internalCommand.getNameWithPrefix()))
+                    .setDescription(finalHelp);
+        }).subscribe());
+
+    }
+
+    private String autoBuildHelp(InternalCommand internalCommand) {
         StringBuilder description = new StringBuilder();
         description.append(String.format(Messages.HELP_DESCRIPTION, internalCommand.getDescription()));
 
@@ -82,14 +97,7 @@ public class HelpServiceImpl implements HelpService {
             }
 
         }
-
-
-        String finalDescription = description.toString();
-        channel.subscribe(c -> c.createEmbed(e -> {
-            e.setTitle(String.format(Messages.HELP_HEADING, internalCommand.getNameWithPrefix()))
-                    .setDescription(finalDescription);
-        }).subscribe());
-
+        return description.toString();
     }
 
     @Override

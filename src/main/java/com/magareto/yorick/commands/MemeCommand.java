@@ -10,7 +10,7 @@ import discord4j.core.object.entity.Message;
 
 import java.util.List;
 
-@Command(name = "meme", description = "sends a meme in the chat.")
+@Command(name = "meme", description = "Sends a meme in the chat.")
 public class MemeCommand extends YorickCommand {
 
     public static MemeService memeService = Globals.injector.getInstance(MemeService.class);
@@ -32,6 +32,11 @@ public class MemeCommand extends YorickCommand {
 
     @Override
     public List<String> getArguments() {
+        return null;
+    }
+
+    @Override
+    public String getHelp() {
         return null;
     }
 }
