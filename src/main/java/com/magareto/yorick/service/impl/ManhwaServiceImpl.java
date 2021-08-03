@@ -1,5 +1,6 @@
 package com.magareto.yorick.service.impl;
 
+import com.magareto.yorick.bot.EventDispatcher;
 import com.magareto.yorick.bot.constants.RedisConstants;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.models.manhwa.Manhwa;
@@ -22,10 +23,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ManhwaServiceImpl implements ManhwaService {
-    private String testLink = "https://bato.to/browse?genres=mature,adult&langs=en&sort=views_m.za&page=";
+    private String testLink = "";
 
     Logger logger = Logger.getLogger(ManhwaServiceImpl.class);
-
 
     @Override
     public List<Manhwa> recommendManhwa(ManhwaFilter filter) {
