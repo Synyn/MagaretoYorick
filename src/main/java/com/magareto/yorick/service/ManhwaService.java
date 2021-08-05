@@ -8,5 +8,5 @@ import java.util.List;
 public interface ManhwaService {
     void test();
 
-    List<Manhwa> recommendManhwa(ManhwaFilter manhwaFilter);
+    List<Manhwa> recommendManhwas(ManhwaFilter manhwaFilter);
 }

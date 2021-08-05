@@ -1,6 +1,5 @@
 package com.magareto.yorick.service.impl;
 
-import com.magareto.yorick.bot.EventDispatcher;
 import com.magareto.yorick.bot.constants.RedisConstants;
 import com.magareto.yorick.bot.globals.Globals;
 import com.magareto.yorick.models.manhwa.Manhwa;
@@ -9,7 +8,6 @@ import com.magareto.yorick.service.ManhwaService;
 import io.redisearch.Query;
 import io.redisearch.SearchResult;
 import io.redisearch.client.Client;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -23,12 +21,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ManhwaServiceImpl implements ManhwaService {
-    private String testLink = "";
+    private String testLink = "https://bato.to/browse?genres=mature,adult&langs=en&sort=views_m.za&page=";
 
     Logger logger = Logger.getLogger(ManhwaServiceImpl.class);
 
     @Override
-    public List<Manhwa> recommendManhwa(ManhwaFilter filter) {
+    public List<Manhwa> recommendManhwas(ManhwaFilter filter) {
         List<Manhwa> manhwas = new ArrayList<>();
 
         List<io.redisearch.Document> foundManhwas = findManhwas(filter);
@@ -36,7 +34,8 @@ public class ManhwaServiceImpl implements ManhwaService {
             return manhwas;
         }
 
-        for (io.redisearch.Document manhwaDoc : foundManhwas) {
+        List<io.redisearch.Document> listDocs = new ArrayList<>(foundManhwas);
+        for (io.redisearch.Document manhwaDoc : listDocs) {
             Manhwa manhwa = createManhwaFromDocument(manhwaDoc);
             manhwas.add(manhwa);
         }
@@ -86,24 +85,42 @@ public class ManhwaServiceImpl implements ManhwaService {
         StringBuilder fullText = new StringBuilder();
         if (genres != null && !genres.isEmpty()) {
             for (String genre : genres) {
-                fullText.append(genre);
                 fullText.append(" ");
+                fullText.append(genre);
             }
         }
 
         if (!StringUtils.isEmpty(title)) {
+            fullText.append(" ");
             fullText.append(title);
+        }
+
+
+//        if (StringUtils.isEmpty(fullText.toString())) {
+//            fullText.append("mature,ecchi");
+//        }
+
+        fullText.append(" -yaoi");
+
+        int limit = 406;
+        logger.info("istop -> " + filter.isTop());
+        if (filter.isTop()) {
+            limit = 100;
         }
 
         logger.info("fulltext -> " + fullText.toString());
 
-        Query query = new Query(fullText.toString());
-        if (filter.isTop()) {
-            query.setSortBy("rank", true);
+        Query query = new Query(fullText.toString()).limit(0, limit);
+
+        if (filter.isTop() || StringUtils.isEmpty(fullText.toString())) {
+            query.setSortBy("rank", false);
+
         }
 
-
         SearchResult search = client.search(query);
+
+        logger.info("Found results -> " + search.totalResults);
+
         return search.docs;
     }
 
@@ -132,7 +149,8 @@ public class ManhwaServiceImpl implements ManhwaService {
             value.put("summary", manhwa.getSummary());
             value.put("alias", manhwa.getAlias());
             value.put("seriesLink", manhwa.getSeriesLink());
-            value.put("imageLink", manhwa.getSeriesLink());
+            value.put("imageLink", manhwa.getImageLink());
+            logger.info("Image link ->  " + manhwa.getImageLink());
             value.put("rank", manhwa.getRank());
             value.put("monthlyViews", manhwa.getMonthlyViews());
             value.put("totalViews", manhwa.getTotalViews());
@@ -162,16 +180,16 @@ public class ManhwaServiceImpl implements ManhwaService {
 
             for (Element item : items) {
                 Element itemCover = item.select(".item-cover").first();
-                Element image = itemCover.select("img").first();
+
 
                 String seriesLink = itemCover.attr("abs:href");
-                String imageLink = image.attr("abs:src");
                 String itemName = item.select(".item-title").first().text();
 
                 Document itemInfo = Jsoup.connect(seriesLink).userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
                         .referrer("http://www.google.com").get();
 
                 Element mainer = itemInfo.select("#mainer").first();
+                String imageLink = mainer.select(".attr-cover").first().select("img").attr("abs:src");
 
                 Element alias = mainer.select(".alias-set").first();
                 Element summary = mainer.select("pre").first();
